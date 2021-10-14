@@ -44,6 +44,12 @@ class ChordPainter(object):
         if os.path.isdir(dir):
             self.dir = dir
 
+    def drawStrings(self, scheme, pixmap):
+        pass
+
+    def drawFrets(self, scheme, pixmap):
+        pass
+
     def drawChord(self, scheme) -> QPixmap:
         """
         Set up a QPainter object and use scheme to draw a chord
