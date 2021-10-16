@@ -10,7 +10,7 @@ __date__ = '2021-10-12'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 from PyQt5.QtCore import Qt, QSize, QPoint, QRect
-from PyQt5.QtGui import QColor, QPainter, QPixmap, QBrush
+from PyQt5.QtGui import QColor, QPainter, QPixmap, QBrush, QImage
 
 from chord import Chord
 
@@ -51,7 +51,9 @@ class ChordPainter(object):
         """
         if size is None:
             return
-        self.pixmap = QPixmap(size)
+        img = QImage(size, QImage.Format_Grayscale8)
+        self.pixmap = QPixmap(img)
+        pass
 
     def size(self):
         return self.pixmap.size()
@@ -69,7 +71,7 @@ class ChordPainter(object):
 
     def drawStrings(self):
         string_thickness = 2
-        string_color = Qt.black
+        string_color = QColor(Qt.black)
 
         w = self.pixmap.width()
         h = self.pixmap.height()
@@ -83,13 +85,14 @@ class ChordPainter(object):
         pen = self.p.pen()
         pen.setColor(string_color)
         pen.setWidth(string_thickness)
+        pen.setStyle(Qt.SolidLine)
         self.p.setPen(pen)
 
         for sp in self.pos_string:
             self.p.drawLine(sp, margin, sp, h - margin)
 
     def drawFrets(self):
-        color = Qt.black
+        color = QColor(Qt.black)
         bar_zero_width = 4  # width of the 0-th fret (pixels)
         fret_line_width = 2
         next_fret_fragment = 0.1  # draw the strings little bit longer than to the last fret, so thay slightly extend
@@ -104,6 +107,7 @@ class ChordPainter(object):
         # Draw all frets
         pen = self.p.pen()
         pen.setWidth(fret_line_width)
+        pen.setStyle(Qt.SolidLine)
         pen.setColor(color)
         self.p.setPen(pen)
         for f in self.pos_fret:
@@ -118,8 +122,13 @@ class ChordPainter(object):
             else:
                 s = string[0]
             frets_used.append(s)
-        fret_min = min(frets_used)
+
         fret_max = max(frets_used)
+        fret_min = fret_max
+        for fret in frets_used:
+            if fret > 0 and fret < fret_min:
+                fret_min = fret
+
         if fret_max - fret_min > self.nfrets:
             raise ValueError(
                 "Chord {} diagram cannot be shown on range of {} frets".format(self.chord.name, self.nfrets))
@@ -129,6 +138,7 @@ class ChordPainter(object):
             # Draw the 0th fret
             pen = self.p.pen()
             pen.setWidth(bar_zero_width)
+            pen.setStyle(Qt.SolidLine)
             pen.setColor(color)
             self.p.setPen(pen)
             self.p.drawLine(self.pos_fret[0], self.pos_string[0], self.pos_fret[0], self.pos_string[-1])
@@ -137,10 +147,10 @@ class ChordPainter(object):
 
     def drawFinger(self, istring):
         margin = 0
-        color = Qt.black
+        color = QColor(Qt.black)
         offsetFromFret = 0.2  # Of the fret width
         labelFinger = False
-        labelColor = Qt.white
+        labelColor = QColor(Qt.white)
         pen = self.p.pen()
         brush = QBrush()
         brush.setColor(color)
@@ -176,6 +186,7 @@ class ChordPainter(object):
         pen = self.p.pen()
         pen.setBrush(Qt.NoBrush)
         pen.setWidth(lineWidth)
+        pen.setStyle(Qt.SolidLine)
         self.p.setPen(pen)
 
         self.p.drawEllipse(self._getMarkerRect(istring, margin))
@@ -186,12 +197,32 @@ class ChordPainter(object):
         pen = self.p.pen()
         pen.setBrush(Qt.NoBrush)
         pen.setWidth(lineWidth)
+        pen.setStyle(Qt.SolidLine)
         self.p.setPen(pen)
 
         rect = self._getMarkerRect(istring, margin)
 
         self.p.drawLine(rect.topLeft(), rect.bottomRight())
         self.p.drawLine(rect.topRight(), rect.bottomLeft())
+
+    def drawFretDot(self, fret):
+        color = QColor(Qt.gray)
+        size = 0.8  # fraction of the distance between strings
+
+        radius = size * self.pos_string[0]
+
+        center = self._fretRect(fret).center()
+        topLeft = center - QPoint(radius, radius)
+        bottomRight = center + QPoint(radius, radius)
+
+        pen = self.p.pen()
+        brush = QBrush()
+        brush.setColor(color)
+        pen.setStyle(Qt.NoPen)
+        pen.setBrush(brush)
+        self.p.setPen(pen)
+
+        self.p.drawEllipse(QRect(topLeft, bottomRight))
 
     def _getMarkerRect(self, istring, margin):
         topLeft = QPoint(self.pos_string[istring] - self.openStringMarkSize / 2 + margin,
@@ -200,3 +231,14 @@ class ChordPainter(object):
                              self.openStringMarkSize - margin)
         rect = QRect(topLeft, bottomRight)
         return rect
+
+    def _fretRect(self, fret):
+        """
+        Returns a rectangle representing a given fret.
+        The rectangle position takes the firstFretVisible into consideration
+        """
+
+        # Basic fret rectangle:
+        rect = QRect(self.pos_string[0], self.pos_fret[0], self.pos_string[-1], self.pos_fret[1])
+
+        rect.moveBottom(rect.height() * (fret - 1 - self.firstFretVisible))
