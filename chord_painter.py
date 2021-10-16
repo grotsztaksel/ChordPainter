@@ -22,6 +22,7 @@ class ChordPainter(object):
 
     def __init__(self, chord=None, size=None):
 
+        self.p = QPainter()
         self.setChord(chord)
         self.setSize(size)
 
@@ -32,7 +33,6 @@ class ChordPainter(object):
         self.openStringMarkSize = 20  # pixels
         self.muteStringMarkSize = 20  # pixels
 
-        self.p = QPainter()
         self.firstFretVisible = 0
 
         self.pos_string = []
@@ -51,9 +51,11 @@ class ChordPainter(object):
         """
         if size is None:
             return
-        img = QImage(size, QImage.Format_Grayscale8)
-        self.pixmap = QPixmap(img)
-        pass
+        self.pixmap = QPixmap(size)
+        self.pixmap.fill(QColor(Qt.white))
+        self.p.begin(self.pixmap)
+
+
 
     def size(self):
         return self.pixmap.size()
