@@ -224,12 +224,13 @@ class FretPainter(AbstractPainter):
         pen.setColor(self.color)
         self.p.setPen(pen)
 
-        width = self.pixmap.rect().right() - self.parent.pos_string[-1]
+        topLeft = self.fretBoard.topRight()
+        width = self.pixmap.rect().right() - topLeft.x()
         height = width
-        topLeft = QPoint(self.parent.pos_string[-1], self.fretBoard.top())
         bottomRight = QPoint(self.pixmap.rect().right(), topLeft.y() + height)
 
         rect = QRect(topLeft, bottomRight)
+        rect.moveTo(topLeft - QPoint(0, height / 2))
 
         font = self.p.font()
         font.setFamily("Times New Roman")
@@ -265,7 +266,7 @@ class SymbolPainter(AbstractPainter):
 
         self.p.setBrush(brush)
         self.p.setPen(pen)
-        rect = QRect(topLeft, bottomRight)
+        rect = QRect(topLeft, bottomRight).adjusted(1, 1, -1, -1)
         self.p.drawEllipse(rect)
 
         if finger is None:
