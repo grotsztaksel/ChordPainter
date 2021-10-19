@@ -28,9 +28,11 @@ if __name__ == '__main__':
     painter.frets.draw()
     painter.frets.drawDot(3)
     painter.symbols.drawFinger(0, 3)
-    painter.symbols.drawOpenString(1)
+    painter.symbols.drawOpenString(3)
     painter.symbols.drawMuteString(2)
-    painter.symbols.drawFinger(3, 2, 1)
+    painter.symbols.drawFinger(3, 1, 3)
+    painter.firstFretVisible = 3
+    painter.frets.drawFretNumber()
     painter.p.end()
     px = painter.pixmap
     mw = MainWindow(None, px)

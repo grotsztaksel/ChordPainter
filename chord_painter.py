@@ -214,6 +214,31 @@ class FretPainter(AbstractPainter):
 
         self.p.drawEllipse(QRect(topLeft, bottomRight))
 
+    def drawFretNumber(self):
+        if self.parent.firstFretVisible == 0:
+            return
+        rom = int_to_roman(self.parent.firstFretVisible)
+        pen = self.p.pen()
+        pen.setWidth(self.bar_zero_width)
+        pen.setStyle(Qt.SolidLine)
+        pen.setColor(self.color)
+        self.p.setPen(pen)
+
+        width = self.pixmap.rect().right() - self.parent.pos_string[-1]
+        height = width
+        topLeft = QPoint(self.parent.pos_string[-1], self.fretBoard.top())
+        bottomRight = QPoint(self.pixmap.rect().right(), topLeft.y() + height)
+
+        rect = QRect(topLeft, bottomRight)
+
+        font = self.p.font()
+        font.setFamily("Times New Roman")
+        font.setPixelSize(rect.height())
+        self.p.setFont(font)
+
+        # self.p.drawRect(rect)
+        self.p.drawText(rect, Qt.AlignCenter, rom)
+
 
 class SymbolPainter(AbstractPainter):
     def __init__(self, parent):
@@ -252,7 +277,7 @@ class SymbolPainter(AbstractPainter):
         pen.setBrush(brush)
         pen.setColor(brush.color())
         font = self.p.font()
-        font.setPixelSize(rect.height()*0.8)
+        font.setPixelSize(rect.height() * 0.8)
 
         self.p.setFont(font)
         self.p.setPen(pen)
