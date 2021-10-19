@@ -75,6 +75,7 @@ class ChordPainter(object):
         self.pixmap = QPixmap(size)
         self.pixmap.fill(QColor(Qt.white))
         self.p.begin(self.pixmap)
+        self.p.setRenderHint(QPainter.Antialiasing)
 
     def size(self):
         return self.pixmap.size()
@@ -106,8 +107,8 @@ class AbstractPainter(object):
         raise NotImplementedError
 
     def fretRect(self, fret):
-        fret_width = self.parent.pos_fret[0] - self.fretBoard.top()
-        fret_pos = self.parent.pos_fret[fret] - self.parent.firstFretVisible
+        fret_width = self.parent.pos_fret[1] - self.fretBoard.top()
+        fret_pos = self.parent.pos_fret[fret - 1] - self.parent.firstFretVisible
         return QRect(self.fretBoard.left(), fret_pos, self.fretBoard.width(), fret_width)
 
     def stringOffset(self):
@@ -142,7 +143,7 @@ class FretPainter(AbstractPainter):
     def __init__(self, parent):
         super().__init__(parent)
         self.color = QColor(Qt.black)
-        self.dotColor = QColor(Qt.gray).lighter()
+        self.dotColor = QColor(Qt.gray)
         self.dotSize = 0.8  # fraction of the distance between strings
         self.bar_zero_width = 4  # width of the 0-th fret (pixels)
         self.fret_line_width = 2
@@ -204,10 +205,11 @@ class FretPainter(AbstractPainter):
         bottomRight = center + QPoint(radius, radius)
 
         pen = self.p.pen()
-        brush = QBrush()
+        brush = QBrush(Qt.SolidPattern)
         brush.setColor(self.dotColor)
         pen.setStyle(Qt.NoPen)
         pen.setBrush(brush)
+        self.p.setBrush(brush)
         self.p.setPen(pen)
 
         self.p.drawEllipse(QRect(topLeft, bottomRight))
@@ -217,8 +219,9 @@ class SymbolPainter(AbstractPainter):
     def __init__(self, parent):
         super().__init__(parent)
         self.color = QColor(Qt.black)
+        self.fingerNumberColor = QColor(Qt.white)
         self.lineWidth = 2  # Line width for the open and mute string symbols ('x' and 'o')
-        self.margin = 2
+        self.margin = 6
         self.fingerOnFretWidth = 0.7  # Percentage of the where the finger marker should be painted
 
     def drawFinger(self, istring, fret, finger=None):
@@ -230,33 +233,54 @@ class SymbolPainter(AbstractPainter):
         bottomRight = symbolCenter + QPoint(0.5 * self.stringOffset(), 0.5 * self.stringOffset())
 
         pen = self.p.pen()
-        brush = QBrush()
+        pen.setStyle(Qt.NoPen)
+
+        brush = QBrush(Qt.SolidPattern)
         brush.setColor(self.color)
 
-        pen.setStyle(Qt.NoPen)
-        pen.setBrush(brush)
-        self.p.setPen()
-
-        self.p.drawEllipse(topLeft, bottomRight)
+        self.p.setBrush(brush)
+        self.p.setPen(pen)
+        rect = QRect(topLeft, bottomRight)
+        self.p.drawEllipse(rect)
 
         if finger is None:
             return
 
+        brush.setColor(self.fingerNumberColor)
+        pen.setColor(self.fingerNumberColor)
+        pen.setStyle(Qt.SolidLine)
+        pen.setBrush(brush)
+        pen.setColor(brush.color())
+        font = self.p.font()
+        font.setPixelSize(rect.height()*0.8)
+
+        self.p.setFont(font)
+        self.p.setPen(pen)
+        self.p.setBrush(brush)
+
+        self.p.drawText(rect, Qt.AlignCenter, str(finger))
+        print("Drawint text")
+
     def drawOpenString(self, istring):
         pen = self.p.pen()
-        pen.setBrush(Qt.NoBrush)
+        brush = QBrush(Qt.NoBrush)
+        pen.setColor(self.color)
         pen.setWidth(self.lineWidth)
         pen.setStyle(Qt.SolidLine)
         self.p.setPen(pen)
+        self.p.setBrush(brush)
 
         self.p.drawEllipse(self._getMarkerRect(istring, self.margin))
 
     def drawMuteString(self, istring):
         pen = self.p.pen()
-        pen.setBrush(Qt.NoBrush)
+        brush = QBrush(Qt.NoBrush)
+
         pen.setWidth(self.lineWidth)
         pen.setStyle(Qt.SolidLine)
+
         self.p.setPen(pen)
+        self.p.setBrush(brush)
 
         rect = self._getMarkerRect(istring, self.margin)
 
@@ -264,10 +288,12 @@ class SymbolPainter(AbstractPainter):
         self.p.drawLine(rect.topRight(), rect.bottomLeft())
 
     def _getMarkerRect(self, istring, margin):
-        topLeft = QPoint(self.pos_string[istring] - self.openStringMarkSize / 2 + margin,
-                         margin)
-        bottomRight = QPoint(self.pos_string[istring] + self.openStringMarkSize / 2 - margin,
-                             self.openStringMarkSize - margin)
+        markerSize = int(0.8 * self.stringOffset())
+        bottomRight = QPoint(self.parent.pos_string[istring] + markerSize / 2,
+                             self.fretBoard.top() - margin)
+
+        topLeft = bottomRight - QPoint(markerSize, markerSize)
+
         rect = QRect(topLeft, bottomRight)
         return rect
 

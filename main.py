@@ -19,13 +19,18 @@ from main_window import MainWindow
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    # Using a QApplication appears to mitigate the crasch that would otherwise occur upon constructing a QPixmap.
+    # Using a QApplication appears to mitigate the crash that would otherwise occur upon constructing a QPixmap.
     #
-    size = QSize(160, 240)
+    size = QSize(141, 320)
     crd = Chord("c", ((2, 1), 0, (2, 2), (2, 3)))
     painter = ChordPainter(crd, size)
     painter.strings.draw()
     painter.frets.draw()
+    painter.frets.drawDot(3)
+    painter.symbols.drawFinger(0, 3)
+    painter.symbols.drawOpenString(1)
+    painter.symbols.drawMuteString(2)
+    painter.symbols.drawFinger(3, 2, 1)
     painter.p.end()
     px = painter.pixmap
     mw = MainWindow(None, px)
