@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import QDialog
 class MainWindow(QDialog):
     def __init__(self, parent, pixmap):
         super().__init__(parent, Qt.Dialog)
+        self.setWindowFlags(self.windowFlags() & ~ Qt.WindowContextHelpButtonHint)
         self.setFixedSize(pixmap.size() + QSize(1, 1))
 
         palette = self.palette()
