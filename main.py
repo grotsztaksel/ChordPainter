@@ -8,12 +8,13 @@ Created on 12.10.2021 21:54
 __authors__ = ['Piotr Gradkowski <grotsztaksel@o2.pl>']
 __date__ = '2021-10-12'
 
+import os
 import sys
 
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication
 
-from chord import Chord
+from banjo import Banjo_5string as Banjo
 from chord_painter import ChordPainter
 from main_window import MainWindow
 
@@ -22,20 +23,31 @@ if __name__ == '__main__':
     # Using a QApplication appears to mitigate the crash that would otherwise occur upon constructing a QPixmap.
     #
     size = QSize(141, 320)
-    crd = Chord("c", ((2, 1), 0, (2, 2), (2, 3)))
-    painter = ChordPainter(crd, size)
-    painter.strings.draw()
-    painter.frets.draw()
-    painter.frets.drawDot(3)
-    painter.symbols.drawFinger(0, 3)
-    painter.symbols.drawOpenString(3)
-    painter.symbols.drawMuteString(2)
-    painter.symbols.drawFinger(3, 1, 3)
-    painter.firstFretVisible = 3
-    painter.frets.drawFretNumber()
-    painter.p.end()
-    px = painter.pixmap
-    mw = MainWindow(None, px)
-    mw.exec()
+    banjo = Banjo()
+
+    targetDir = os.path.join(os.getcwd(), "images")
+    if not os.path.isdir(targetDir):
+        os.makedirs(targetDir)
+
+    for chord in banjo.chords:
+
+        painter = ChordPainter(chord, size, banjo)
+        painter.drawEmpty()
+        painter.drawChord()
+        painter.p.end()
+        px = painter.pixmap
+
+        filenum = 0
+        ext = ".png"
+        fileName = chord.toString + chord.suffix
+        targetFileName = fileName + ext
+        while os.path.isfile(os.path.join(targetDir, targetFileName)):
+            filenum += 1
+            targetFileName = fileName + "_" + str(filenum) + ext
+
+        px.save(os.path.join(targetDir, targetFileName))
+        mw = MainWindow(None, px)
+        mw.setWindowTitle(chord.name)
+        # mw.exec()
 
     sys.exit(app.exit())
