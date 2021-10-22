@@ -33,6 +33,8 @@ class Banjo_5string(Instrument):
 
         self.defineChord("D#", ((3 + 2, 3), (1 + 2, 1), (2 + 2, 2), (3 + 2, 4)))
         self.defineChord("D#", (((8, 1), (8, 1), (8, 1), (8, 1))))
+        self.defineChord("D#7", (((1, 1), 0, (2, 3), (1, 2))))
+        # self.defineChord("D#7", (((1, 1), (3, 3), (2, 2), (5, 4))))
 
         self.defineChord("E", ((2, 2), (1, 1), 0, (2, 3)))
         self.defineChord("e", ((2, 2), 0, 0, (2, 3)))
@@ -57,6 +59,7 @@ class Banjo_5string(Instrument):
         self.defineChord("A7", ((2, 1), 0, (2, 2), (2, 2)))
 
         self.defineChord("A#", ((3, 1), (3, 1), (3, 1), (3, 1)))
+        self.defineChord("A#7", ((3, 1), (3, 1), (3, 1), (6, 4)))
 
         self.defineChord("H", ((4, 1), (4, 1), (4, 1), (4, 1)))
         self.defineChord("h", ((2 + 2, 2), (2 + 2, 3), (1 + 2, 1), (2 + 2, 4)))
