@@ -20,11 +20,12 @@ class ChordPainter(object):
     The class actually responsible for painting the chord scheme and saving image files from them
     """
 
-    def __init__(self, chord=None, size=None):
+    def __init__(self, chord=None, size=None, instrument=None):
 
         self.p = QPainter()
         self.setChord(chord)
         self.setSize(size)
+        self.setInstrument(instrument)
 
         topMargin = 0.15
         rightMargin = 0.15
@@ -47,17 +48,8 @@ class ChordPainter(object):
         self.pos_fret = self.frets.getFretPositions(self.nfrets)
         self.pos_string = self.strings.getStringPositions()
 
-        # pen = self.p.pen()
-        # pen.setColor(QColor(Qt.green))
-        # self.p.setPen(pen)
-        # self.p.drawRect(self.fretBoard)
-        # pen.setColor(QColor(Qt.magenta))
-        # brush = QBrush(QColor(Qt.blue))
-        #
-        # pen.setBrush(brush)
-        # self.p.setPen(pen)
-        #
-        # self.p.drawRect(QRect(self.pixmap.rect().topLeft(), self.fretBoard.topRight()))
+    def setInstrument(self, instrument):
+        self.instrument = instrument
 
     def setChord(self, chord):
         """
@@ -80,16 +72,26 @@ class ChordPainter(object):
     def size(self):
         return self.pixmap.size()
 
+    def drawEmpty(self):
+        """
+        Draws almost all elements of the chord diagram. Does not draw the chord itself
+        """
+        self.frets.draw()
+        self.frets.drawFretNumber()
+        if self.instrument is not None:
+            for dotFret in self.instrument.dotsOnFrets:
+                self.frets.drawDot(dotFret)
+        self.strings.draw()
+
     def drawChord(self):
-        for s, i in enumerate(self.chord.scheme):
-            if not isinstance(s, int):
-                s = s[0]
-            if s < 0:
+        for i in range(len(self.chord.scheme)):
+            fret = self.chord.fret(i)
+            if fret < 0:
                 self.symbols.drawMuteString(i)
-            elif s == 0:
+            elif fret == 0:
                 self.symbols.drawOpenString(i)
             else:
-                self.symbols.drawFinger(i)
+                self.symbols.drawFinger(i, fret, self.chord.finger(i))
 
 
 class AbstractPainter(object):
@@ -108,7 +110,7 @@ class AbstractPainter(object):
 
     def fretRect(self, fret):
         fret_width = self.parent.pos_fret[1] - self.fretBoard.top()
-        fret_pos = self.parent.pos_fret[fret - 1] - self.parent.firstFretVisible
+        fret_pos = self.parent.pos_fret[0] + fret_width * (fret - 1 - self.parent.firstFretVisible)
         return QRect(self.fretBoard.left(), fret_pos, self.fretBoard.width(), fret_width)
 
     def stringOffset(self):
@@ -166,12 +168,8 @@ class FretPainter(AbstractPainter):
         # If the zeroth fret is visible on the diagram (i.e the diagram does not start from, for example, fret III,
         # draw the bar
         frets_used = []
-        for string in self.chord.scheme:
-            if isinstance(string, int):
-                s = string
-            else:
-                s = string[0]
-            frets_used.append(s)
+        for string in range(len(self.chord.scheme)):
+            frets_used.append(self.chord.fret(string))
 
         fret_max = max(frets_used)
         fret_min = fret_max
@@ -201,6 +199,8 @@ class FretPainter(AbstractPainter):
         radius = int(self.dotSize * self.parent.pos_string[0])
 
         center = self.fretRect(fret).center()
+        if not self.fretBoard.contains(center):
+            return
         topLeft = center - QPoint(radius, radius)
         bottomRight = center + QPoint(radius, radius)
 
@@ -244,6 +244,7 @@ class FretPainter(AbstractPainter):
 class SymbolPainter(AbstractPainter):
     def __init__(self, parent):
         super().__init__(parent)
+        self.drawFingerNumbers = False
         self.color = QColor(Qt.black)
         self.fingerNumberColor = QColor(Qt.white)
         self.lineWidth = 2  # Line width for the open and mute string symbols ('x' and 'o')
@@ -269,7 +270,7 @@ class SymbolPainter(AbstractPainter):
         rect = QRect(topLeft, bottomRight).adjusted(1, 1, -1, -1)
         self.p.drawEllipse(rect)
 
-        if finger is None:
+        if finger is None or not self.drawFingerNumbers:
             return
 
         brush.setColor(self.fingerNumberColor)
@@ -285,7 +286,6 @@ class SymbolPainter(AbstractPainter):
         self.p.setBrush(brush)
 
         self.p.drawText(rect, Qt.AlignCenter, str(finger))
-        print("Drawint text")
 
     def drawOpenString(self, istring):
         pen = self.p.pen()
