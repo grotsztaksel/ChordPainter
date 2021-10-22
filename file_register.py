@@ -25,8 +25,32 @@ class FileRegister(object):
     """
     md5 = hashlib.md5()
 
-    def __init__(self):
+    def __init__(self, suffix_index=1):
         self.files = {}
+        self.suffix = suffix_index
+
+    def getUniqueName(self, filename):
+        """
+        Returns name that does not collide with ones already created in the process
+        """
+
+        fileName = os.path.abspath(filename)
+        dir, fname = os.path.split(fileName)
+
+        if os.extsep in fname:
+            lfileName = fileName.rsplit(os.extsep, 1)
+            fname = lfileName[0]
+            ext = os.extsep + lfileName[1]
+        else:
+            ext = ""
+
+        num_suffix = self.suffix - 1
+        file = fname + ext
+        while self.isRegistered(file):
+            num_suffix += 1
+            file = fname + "_" + str(num_suffix) + ext
+
+        return file
 
     def hash(self, file):
         with open(file, 'rb') as f:
@@ -40,6 +64,4 @@ class FileRegister(object):
     def isRegistered(self, file):
         if not os.path.isfile(file):
             return False
-        if file not in self.files:
-            return False
-        return self.hash(file) == self.files[file]
+        return file in self.files

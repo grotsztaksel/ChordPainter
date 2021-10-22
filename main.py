@@ -27,14 +27,12 @@ if __name__ == '__main__':
     banjo = Banjo()
     targetDir = os.path.join(os.getcwd(), "images")
 
-
     filereg = FileRegister()
 
     if not os.path.isdir(targetDir):
         os.makedirs(targetDir)
 
     for chord in banjo.chords:
-
         painter = ChordPainter(chord, size, banjo)
         painter.drawEmpty()
         painter.drawChord()
@@ -44,14 +42,12 @@ if __name__ == '__main__':
         filesSaved = []
         filenum = 0
         ext = ".png"
-        fileName = chord.toString + chord.suffix
-        targetFileName = fileName + ext
-        while filereg.isRegistered(os.path.join(targetDir, targetFileName)):
-            filenum += 1
-            targetFileName = fileName + "_" + str(filenum) + ext
+        fileName = chord.toString + chord.suffix + ext
 
-        px.save(os.path.join(targetDir, targetFileName))
-        filereg.register(os.path.join(targetDir, targetFileName))
+        pngName = filereg.getUniqueName(os.path.join(targetDir, fileName))
+        px.save(pngName)
+        print ("Saved ", pngName)
+        filereg.register(pngName)
 
         mw = MainWindow(None, px)
         mw.setWindowTitle(chord.name)
