@@ -28,6 +28,26 @@ class Chord(Chord):
     def __len__(self):
         return len(self.scheme)
 
+    def fret(self, istring):
+        """
+        Unpacks the i-th item from the scheme and returns the fret that should be pressed
+        """
+        c = self.scheme[istring]
+        if isinstance(c, int):
+            return c
+        return c[0]
+
+    def finger(self, istring):
+        """
+        Unpacks the i-th item from the scheme and returns the finger that should be used to press the string
+        """
+        c = self.scheme[istring]
+        if isinstance(c, int):
+            return None
+        elif len(c) < 1:
+            return None
+        return c[1]
+
     @property
     def toString(self):
         """
