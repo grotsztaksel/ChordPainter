@@ -16,7 +16,7 @@ CHORD_SUFFIXES = r"(\+|0|6|6\/9|7|7b5|7sus4|9|sus2|sus4|add9)?"
 CHORD_ENGLISH = re.compile(r"[A-G]#?m?" + CHORD_SUFFIXES)
 CHORD_GERMAN = re.compile(r"([AaEe]s?|[CDcdF-hf-h](is)?)" + CHORD_SUFFIXES)
 
-Chord = namedtuple("Chord", ["name", "scheme"])
+Chord = namedtuple("Chord", ["name", "scheme", "suffix"], defaults=[""])
 Chord.__doc__ = """
                 A tuple representing a chord. 
                 An instrument can have multiple chords with the same name as long as their diagram schemes are different
