@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import QApplication
 
 from banjo import Banjo_5string as Banjo
 from chord_painter import ChordPainter
+from file_register import FileRegister
 from main_window import MainWindow
 
 if __name__ == '__main__':
@@ -24,8 +25,11 @@ if __name__ == '__main__':
     #
     size = QSize(141, 320)
     banjo = Banjo()
-
     targetDir = os.path.join(os.getcwd(), "images")
+
+
+    filereg = FileRegister()
+
     if not os.path.isdir(targetDir):
         os.makedirs(targetDir)
 
@@ -37,15 +41,18 @@ if __name__ == '__main__':
         painter.p.end()
         px = painter.pixmap
 
+        filesSaved = []
         filenum = 0
         ext = ".png"
         fileName = chord.toString + chord.suffix
         targetFileName = fileName + ext
-        while os.path.isfile(os.path.join(targetDir, targetFileName)):
+        while filereg.isRegistered(os.path.join(targetDir, targetFileName)):
             filenum += 1
             targetFileName = fileName + "_" + str(filenum) + ext
 
         px.save(os.path.join(targetDir, targetFileName))
+        filereg.register(os.path.join(targetDir, targetFileName))
+
         mw = MainWindow(None, px)
         mw.setWindowTitle(chord.name)
         # mw.exec()
