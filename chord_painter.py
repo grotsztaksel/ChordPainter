@@ -28,7 +28,7 @@ class ChordPainter(object):
         self.setInstrument(instrument)
 
         topMargin = 0.15
-        rightMargin = 0.15
+        rightMargin = 0.2
         # Use only a part of the available space to draw the fretboard: leave some margins for open/mute string marks
         # and for fret numbering, if the diagram does not start at fret 0
 
@@ -146,7 +146,7 @@ class FretPainter(AbstractPainter):
         super().__init__(parent)
         self.color = QColor(Qt.black)
         self.dotColor = QColor(Qt.gray)
-        self.dotSize = 0.8  # fraction of the distance between strings
+        self.dotSize = 0.5  # fraction of the distance between strings
         self.bar_zero_width = 4  # width of the 0-th fret (pixels)
         self.fret_line_width = 2
         self.next_fret_fragment = 0.1  # draw the strings little bit longer than to the last fret, so they are slightly
@@ -234,7 +234,7 @@ class FretPainter(AbstractPainter):
 
         font = self.p.font()
         font.setFamily("Times New Roman")
-        font.setPixelSize(rect.height())
+        font.setPixelSize(rect.height() * 0.8)
         self.p.setFont(font)
 
         # self.p.drawRect(rect)
