@@ -12,12 +12,25 @@
             width: 160px;
             height: auto;
         }
-        th {font-size:30px;padding-top:60px}
-        table, th, td {
+        th {
+            border-top: 2px solid gray;
+            border-left: 1px solid gray;
+            border-right: 1px solid gray;
+            font-size:30px;
+            padding-top:40px
+        }
+        th.sharp {
+            background: black;
+            color: white;
+        }
+        table, td {
             border: 0px solid gray;
+            border-left: 1px solid gray;
+            border-right: 1px solid gray;
             border-collapse: collapse;
             padding-left: 20px;
             padding-right:15px;
+            padding-bottom:15px;
         }
         th.highlight, td.highlight {
             background: #EFEFEF;
@@ -30,16 +43,16 @@
 <table>
     <tr>
         <th>C <sup> </sup></th> <!-- leave the <sup/> tag for better character alignment with the C<sup>7<sup> -->
-        <th>C#<sup> </sup></th>
+        <th class="sharp">C#<sup> </sup></th>
         <th>D <sup> </sup></th>
-        <th>D#<sup> </sup></th>
+        <th class="sharp">D#<sup> </sup></th>
         <th>E <sup> </sup></th>
         <th>F <sup> </sup></th>
-        <th>F#<sup> </sup></th>
+        <th class="sharp">F#<sup> </sup></th>
         <th>G <sup> </sup></th>
-        <th>G#<sup> </sup></th>
+        <th class="sharp">G#<sup> </sup></th>
         <th>A <sup> </sup></th>
-        <th>A#<sup> </sup></th>
+        <th class="sharp">A#<sup> </sup></th>
         <th>H <sup> </sup></th>
     </tr>
     <tr>
@@ -86,16 +99,16 @@
     </tr>
     <tr>
         <th>C <sup>7</sup></th> <!-- leave the <sup/> tag for better character alignment with the C<sup>7<sup> -->
-        <th>C#<sup>7</sup></th>
+        <th class="sharp">C#<sup>7</sup></th>
         <th>D <sup>7</sup></th>
-        <th>D#<sup>7</sup></th>
+        <th class="sharp">D#<sup>7</sup></th>
         <th>E <sup>7</sup></th>
         <th>F <sup>7</sup></th>
-        <th>F#<sup>7</sup></th>
+        <th class="sharp">F#<sup>7</sup></th>
         <th>G <sup>7</sup></th>
-        <th>G#<sup>7</sup></th>
+        <th class="sharp">G#<sup>7</sup></th>
         <th>A <sup>7</sup></th>
-        <th>A#<sup>7</sup></th>
+        <th class="sharp">A#<sup>7</sup></th>
         <th>H <sup>7</sup></th>
     </tr>
     <tr>
