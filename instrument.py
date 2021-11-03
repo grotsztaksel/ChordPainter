@@ -25,13 +25,15 @@ class Instrument(object):
         # Name of the instrument. May be used to prefix the filenames with chord diagrams
         self.name = None
         self.strings = list()  # Names (tones) of the strings
-        self.chords = set()
+        self.chords = list()
 
     def defineChord(self, name, scheme):
         """
         Add a chord diagram to the class
         """
-        self.chords.add(Chord(name, scheme))
+        chord  = Chord(name, scheme)
+        if chord not in self.chords:
+            self.chords.append(chord)
 
     def checkChords(self):
         """
@@ -50,10 +52,3 @@ class Instrument(object):
         warnings.warn(
             "{} describes {} strings, while {} has {} strings".format(chord.name, len(chord.scheme),
                                                                       self.name, len(self.strings)))
-
-    def checkChordName(self, chord):
-        if not CHORD_PATTERN.match(chord.name):
-            self.chordNameWarning(chord)
-
-    def chordNameWarning(self, chord):
-        warnings.warn(chord.name + " seems to be not a valid chord name")
