@@ -86,7 +86,7 @@ class ChordPainter(object):
     def drawChord(self):
         for i in range(len(self.chord.scheme)):
             fret = self.chord.fret(i)
-            if fret < 0:
+            if not isinstance(fret, int) or fret < 0:
                 self.symbols.drawMuteString(i)
             elif fret == 0:
                 self.symbols.drawOpenString(i)
@@ -147,7 +147,7 @@ class FretPainter(AbstractPainter):
         self.color = QColor(Qt.black)
         self.dotColor = QColor(Qt.gray)
         self.dotSize = 0.5  # fraction of the distance between strings
-        self.bar_zero_width = 4  # width of the 0-th fret (pixels)
+        self.bar_zero_width = 8  # width of the 0-th fret (pixels)
         self.fret_line_width = 2
         self.next_fret_fragment = 0.1  # draw the strings little bit longer than to the last fret, so they are slightly
         #                                extended (by a fraction of the fret width)
