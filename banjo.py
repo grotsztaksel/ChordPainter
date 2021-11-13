@@ -20,7 +20,8 @@ class Banjo_5string(Instrument):
         self.dotsOnFrets = [3, 5, 7, 10, 12, 15, 17]
 
         self.defineChord("C", ((2, 2), 0, (1, 1), (2, 3)))
-        self.defineChord("c", ((2, 1), 0, (2, 2), (2, 3)))
+        self.defineChord("c", ((1, 1), 0, (1, 2), (1, 3)))
+        self.defineChord("c", ((5, 2), (5, 3), (4, 1), (5, 4)))
         self.defineChord("C7", ((2, 1), (3, 4), (1, 1), (2, 3)))
 
         self.defineChord("C#", ((3, 3), (1, 1), (2, 2), (3, 4)))
