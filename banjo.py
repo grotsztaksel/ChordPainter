@@ -18,10 +18,31 @@ class Banjo_5string(Instrument):
         self.name = "Banjo"
         self.strings = list("GDGHD")
         self.dotsOnFrets = [3, 5, 7, 10, 12, 15, 17]
-
+        #                      (fret, finger)
         self.defineChord("C", ((2, 2), 0, (1, 1), (2, 3)))
+        self.defineChord("C", ((5, 1), (5, 1), (5, 1), (5, 1)))
+        self.defineChord("C", ((10, 3), (9, 2), (8, 1), (10, 4)))
+        self.defineChord("C", ((14, 3), (12, 1), (13, 2), (14, 4)))
+        self.defineChord("C", ((17, 1), (17, 1), (17, 1), (17, 1)))
+
         self.defineChord("c", ((2, 1), 0, (2, 2), (2, 3)))
+        self.defineChord("c", ((5, 2), (4, 3), (5, 1), (5, 4)))
+        self.defineChord("c", ((10, 3), (8, 1), (8, 1), (10, 4)))
+        self.defineChord("c", ((13, 2), (11, 1), (13, 3), (13, 4)))
+        self.defineChord("c", ((17, 2), (16, 3), (17, 1), (17, 4)))
+
         self.defineChord("C7", ((2, 1), (3, 4), (1, 1), (2, 3)))
+        self.defineChord("C7", ((5, 1), (5, 1), (5, 1), (8, 4)))
+        self.defineChord("C7", ((2, 1), (3, 4), (1, 1), (2, 3)))
+        self.defineChord("C7", ((2, 1), (3, 4), (1, 1), (2, 3)))
+        self.defineChord("C7", ((2, 1), (3, 4), (1, 1), (2, 3)))
+        self.defineChord("C7", ((2, 1), (3, 4), (1, 1), (2, 3)))
+
+        self.defineChord("c7", ((1, 1), (3, 3), (1, 1), (1, 1)))
+        self.defineChord("c7", ((10, 3), (8, 1), (8, 1), (8, 3)))
+        self.defineChord("c7", ((8, 1), (8, 1), (8, 1), (10, 3)))
+        self.defineChord("c7", ((10, 1), (12, 3), (11, 2), (13, 4)))
+        self.defineChord("c7", ((10, 2), (8, 1), (11, 4), (10, 3)))
 
         self.defineChord("C#", ((3, 3), (1, 1), (2, 2), (3, 4)))
         self.defineChord("C#7", ((3, 3), (1, 1), (2, 2), (3, 4)))
