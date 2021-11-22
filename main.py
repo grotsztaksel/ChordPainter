@@ -26,6 +26,7 @@ if __name__ == '__main__':
     size = QSize(141, 320)
     banjo = Banjo()
     targetDir = os.path.join(os.getcwd(), "images")
+    targetDir = r'C:\Users\piotr\Documents\Songs XML\SeparateFiles\img'
 
     filereg = FileRegister()
 
@@ -42,11 +43,11 @@ if __name__ == '__main__':
         filesSaved = []
         filenum = 0
         ext = ".png"
-        fileName = chord.toString + chord.suffix + ext
+        fileName = chord.prefix + chord.toString + chord.suffix + ext
 
         pngName = filereg.getUniqueName(os.path.join(targetDir, fileName))
         px.save(pngName)
-        print ("Saved ", pngName)
+        print("Saved ", pngName)
         filereg.register(pngName)
 
         mw = MainWindow(None, px)
