@@ -27,13 +27,23 @@ class Instrument(object):
         self.strings = list()  # Names (tones) of the strings
         self.chords = list()
 
-    def defineChord(self, name, scheme):
+    def defineChord(self, name, scheme=None, frets=None, fingers=None, prefix=None):
         """
         Add a chord diagram to the class
         """
-        chord  = Chord(name, scheme)
+        if prefix is None:
+            prefix = ""
+        if frets is not None and fingers is not None:
+            if fingers is None:
+                scheme = frets
+            else:
+                scheme = tuple((fr, fg) for fr, fg in zip(frets, fingers))
+        else:
+            assert scheme is not None
+        chord = Chord(name, scheme, prefix=prefix)
         if chord not in self.chords:
             self.chords.append(chord)
+        print (f'self.defineChord("{name}", prefix="{type(self).__name__}"', old2new(scheme), ")")
 
     def checkChords(self):
         """
