@@ -17,6 +17,9 @@ class Banjo_5string(Instrument):
         super().__init__()
         self.name = "Banjo"
         self.strings = list("GDGHD")
+        self.nfrets = 22
+        self.rootfrets = [0, 0, 0, 0, 5]
+
         self.dotsOnFrets = [3, 5, 7, 10, 12, 15, 17]
 
         self.defineChord("C", prefix="banjo_", frets=(2, 0, 1, 2), fingers=(2, 0, 1, 3))

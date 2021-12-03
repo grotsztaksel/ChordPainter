@@ -17,6 +17,9 @@ class Guitar(Instrument):
         super().__init__()
         self.name = "Guitar"
         self.strings = list("EHGDAE")
+        self.nfrets = 20
+        self.rootfrets = len(self.strings) * [0]
+
         self.dotsOnFrets = [3, 5, 7, 9, 12, 15, 17]
         self.defineChord("E", (0, 2, 2, 1, 0, 0))
         self.defineChord("e", (0, 2, 2, 0, 0, 0))

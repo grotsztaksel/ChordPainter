@@ -25,7 +25,12 @@ class Instrument(object):
         # Name of the instrument. May be used to prefix the filenames with chord diagrams
         self.name = None
         self.strings = list()  # Names (tones) of the strings
+        self.nfrets = 0  # number of frets
         self.chords = list()
+
+        # Numbers of frets on which each string begins. Usually is all zeros, but for bluegrass banjo
+        # the 5th string will have value 5
+        self.rootfrets = list()
 
     def defineChord(self, name, scheme=None, frets=None, fingers=None, prefix=None):
         """
@@ -43,7 +48,7 @@ class Instrument(object):
         chord = Chord(name, scheme, prefix=prefix)
         if chord not in self.chords:
             self.chords.append(chord)
-        print (f'self.defineChord("{name}", prefix="{type(self).__name__}"', old2new(scheme), ")")
+        print(f'self.defineChord("{name}", prefix="{type(self).__name__}"', old2new(scheme), ")")
 
     def checkChords(self):
         """
