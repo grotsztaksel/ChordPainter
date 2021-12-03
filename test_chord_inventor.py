@@ -45,6 +45,16 @@ class TestChordInventor(unittest.TestCase):
         # ToDo: Check more chords
         self.assertIn(Chord("e", (0, 2, 2, 0, 0, 0)), chords['e'])
 
+    def test_getChordNotes(self):
+        self.assertEqual({"E", "G#", "B"}, ChordInventor.getChordNotes("E", Interval.major))
+        self.assertEqual({"B", "D#", "F#"}, ChordInventor.getChordNotes("B", Interval.major))
+        self.assertEqual({"A#", "D", "F"}, ChordInventor.getChordNotes("A#", Interval.major))
+        self.assertEqual({"E", "G", "A#"}, ChordInventor.getChordNotes("E", Interval.diminished))
+        self.assertEqual({"A", "C", "E"}, ChordInventor.getChordNotes("A", Interval.minor))
+
+        self.assertEqual(set(NOTES), ChordInventor.getChordNotes("C", 11*[1]))
+
+
     def test_figureOutStrings(self):
         g = Guitar()
         inv = ChordInventor(g)

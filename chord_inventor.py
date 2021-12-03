@@ -43,12 +43,32 @@ class ChordInventor(object):
         self.figureOutStrings()
 
     def buildChords(self, root: str, chordType=None):
-        assert root.upper() in NOTES
-
-        if chordType is None:
-            chordType = Interval.major
 
         chords = []
+
+        for fret in range(0, self.instrument.nfrets - self.maxFingerStretch):
+            pass
+
+    @staticmethod
+    def getChordNotes(root: str, chordIntervals=None):
+        """
+        Determine the notes in a chord
+        """
+        assert root.upper() in NOTES
+
+        if chordIntervals is None:
+            chordIntervals = Interval.major
+
+        allNotes = 3 * NOTES
+        noteIndex = allNotes.index(root.upper())
+
+        notes = set()
+        notes.add(root)
+        for intvl in chordIntervals:
+            noteIndex += (intvl) % 12
+            notes.add(allNotes[noteIndex])
+
+        return notes
 
     def figureOutStrings(self):
         """
