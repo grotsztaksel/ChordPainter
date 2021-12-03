@@ -16,7 +16,7 @@ class Banjo_5string(Instrument):
     def __init__(self):
         super().__init__()
         self.name = "Banjo"
-        self.strings = list("GDGHD")
+        self.strings = list("DBGDG")
         self.nfrets = 22
         self.rootfrets = [0, 0, 0, 0, 5]
 
