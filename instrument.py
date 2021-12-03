@@ -62,3 +62,18 @@ class Instrument(object):
         warnings.warn(
             "{} describes {} strings, while {} has {} strings".format(chord.name, len(chord.scheme),
                                                                       self.name, len(self.strings)))
+
+
+def old2new(old):
+    """ Helper function converting old argument list todefineChord to a new one"""
+    frets = []
+    fingers = []
+    for t in old:
+        try:
+            frets.append(t[0])
+            fingers.append(t[1])
+        except TypeError:
+            frets.append(t)
+            fingers.append(0)
+
+    return ("frets=", tuple(frets), "fingers = ", tuple(fingers))
