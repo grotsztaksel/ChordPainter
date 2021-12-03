@@ -28,7 +28,7 @@ class ChordPainter(object):
         self.setInstrument(instrument)
 
         topMargin = 0.15
-        rightMargin = 0.2
+        rightMargin = 0.25
         # Use only a part of the available space to draw the fretboard: leave some margins for open/mute string marks
         # and for fret numbering, if the diagram does not start at fret 0
 
