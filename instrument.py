@@ -24,7 +24,8 @@ class Instrument(object):
         """
         # Name of the instrument. May be used to prefix the filenames with chord diagrams
         self.name = None
-        self.strings = list()  # Names (tones) of the strings
+        self.strings = list()  # Names (tones) of the strings. 1st string is the one the farthest to the bottom
+        # (the thinnest in guitar)
         self.nfrets = 0  # number of frets
         self.chords = list()
 
