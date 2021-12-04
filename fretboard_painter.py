@@ -30,18 +30,21 @@ class FretboardPainter(object):
         self.p = QPainter()
         self.pixmap = None
 
-        self.fontSize = 8
+        self.fontSize = 12
+        self.fret0Position = 0
+        self.scaleLength = 0
+
         self.size = size
         self.setFontSize(self.fontSize)
 
-        self.fret0Position = QPoint(0, 0)
-        self.scaleLength = 0
-
-        self.string_thickness = 2  # width of the string lines (pixels)
+        self.string_thickness = 1  # width of the string lines (pixels)
         self.string_color = QColor(Qt.black)
         self.dotSize = 0.5  # fraction of the distance between strings
         self.bar_zero_width = 8  # width of the 0-th fret (pixels)
         self.fret_line_width = 2
+
+        for i, s in enumerate(self.instrument.strings):
+            self.drawString(i)
 
     def setFontSize(self, size):
         """Set font size. Basing on that, set the overall size of the picture"""
@@ -64,9 +67,9 @@ class FretboardPainter(object):
         # Therefore
         # s = w / (  1/(2^(n/12)) - 1/(2^((n-1)/12)) )
         n = nfrets  # for shorter notation
-        s = w / (1 / (2 ^ (n / 12)) - 1 / (2 ^ ((n - 1) / 12)))
+        s = w / (1 / pow(2, ((n - 1) / 12)) - 1 / pow(2, (n / 12)))
         self.scaleLength = s
-        d = s - (s / (2 ^ (n / 12)))  # This is the length of the entire fretboard.
+        d = s - (s / pow(2, (n / 12)))  # This is the length of the entire fretboard.
 
         return d
 
@@ -74,8 +77,8 @@ class FretboardPainter(object):
         """
         Return position of a fret in the pixmap. Formula taken from https://www.liutaiomottola.com/formulae/fret.htm
         """
-        d = self.scaleLength - (self.scaleLength / (2 ^ (ifret / 12)))
-        return self.fret0Position.y() + d
+        d = self.scaleLength - (self.scaleLength / pow(2, (ifret / 12)))
+        return self.fret0Position + d
 
     def setSize(self, size: QSize):
         """
@@ -136,8 +139,8 @@ class FretboardPainter(object):
         ibase = NOTES.index(openNote)
         rootFret = self.instrument.rootfrets[i]
 
-        l = self.p.viewport().left() + (i + 0) * (w / nstrings)
-        r = self.p.viewport().left() + (i + 1) * (w / nstrings)
+        l = self.p.viewport().left() + (nstrings - i - 1) * (w / nstrings)
+        r = self.p.viewport().left() + (nstrings - i + 0) * (w / nstrings)
 
         nutPos = self.fretPos(rootFret)
 
@@ -165,16 +168,17 @@ class FretboardPainter(object):
         self.p.setPen(pen)
         self.p.drawLine(QPoint(l, nutPos), QPoint(r, nutPos))
 
-        for i in range(1, self.instrument.nfrets + 1):
-            noteName = NOTES[(ibase + i) % 12]
-            fretCenter = self.fretRect(i).center()
-            fretBottom = self.fretRect(i).bottom()
+        for f in range(self.instrument.rootfrets[i]+1, self.instrument.nfrets + 1):
+            noteName = NOTES[(ibase - self.instrument.rootfrets[i] + f) % 12]
+            fretCenter = self.fretRect(f).center()
+            fretBottom = self.fretRect(f).bottom()
+            print(f"fret {f}, bottom {fretBottom}")
 
             pen.setWidth(self.fret_line_width)
             self.p.setPen(pen)
             self.p.drawLine(QPoint(l, fretBottom), QPoint(r, fretBottom))
 
-            rect = QRect(QPoint(l, fretCenter - height / 2), size)
+            rect = QRect(QPoint(l, fretCenter.y() - height / 2), size)
             self.annotateNote(noteName, rect)
 
     def annotateNote(self, noteName, rect):
@@ -186,7 +190,6 @@ class FretboardPainter(object):
         """
         isRootNote = False
         isChordNote = False
-
         if self.chordNotes is not None:
             if noteName == self.chordNotes[0]:
                 isRootNote = True
@@ -211,7 +214,7 @@ class FretboardPainter(object):
             pen.setColor(Qt.black)
             pen.setStyle(Qt.NoPen)
             font.setBold(False)
-
+        brush.setStyle(Qt.SolidPattern)
         self.p.setFont(font)
         self.p.setPen(pen)
         self.p.setBrush(brush)
@@ -219,6 +222,7 @@ class FretboardPainter(object):
         self.p.drawEllipse(rect)
 
         pen.setStyle(Qt.SolidLine)
+        self.p.setPen(pen)
         self.p.drawText(rect, Qt.AlignCenter, noteName)
 
         self.p.setFont(font_old)
