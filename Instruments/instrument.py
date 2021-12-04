@@ -49,7 +49,7 @@ class Instrument(object):
         chord = Chord(name, scheme, prefix=prefix)
         if chord not in self.chords:
             self.chords.append(chord)
-        print(f'self.defineChord("{name}", prefix="{type(self).__name__}"', old2new(scheme), ")")
+        # print(f'self.defineChord("{name}", prefix="{type(self).__name__}"', old2new(scheme), ")")
 
     def checkChords(self):
         """
