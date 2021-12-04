@@ -89,9 +89,5 @@ class ChordInventor(object):
                 notes_on_string.append(None)
 
             for i in range(self.instrument.nfrets - self.instrument.rootfrets[i] + 1):
-                try:
-                    notes_on_string.append(notes[baseNoteIndex + i])
-                except IndexError as e:
-                    raise e
-
+                notes_on_string.append(notes[baseNoteIndex + i])
             self.notes.append(notes_on_string)
