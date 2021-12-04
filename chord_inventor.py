@@ -10,14 +10,7 @@ __date__ = '2021-12-03'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 from Instruments.instrument import Instrument
-
-NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-
-
-class Interval(object):
-    major = [4, 3]
-    minor = [3, 4]
-    diminished = [3, 3]
+from music_theory import NOTES, ChordInterval
 
 
 class ChordInventor(object):
@@ -57,7 +50,7 @@ class ChordInventor(object):
         assert root.upper() in NOTES
 
         if chordIntervals is None:
-            chordIntervals = Interval.major
+            chordIntervals = ChordInterval.major
 
         allNotes = 3 * NOTES
         noteIndex = allNotes.index(root.upper())

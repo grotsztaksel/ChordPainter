@@ -11,7 +11,8 @@ __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 import unittest
 from Instruments.banjo import Banjo_5string
 from Instruments.guitar import Guitar
-from chord_inventor import ChordInventor, Interval, NOTES
+from chord_inventor import ChordInventor
+from music_theory import NOTES, ChordInterval
 from chord import Chord
 
 
@@ -20,7 +21,7 @@ class TestChordInventor(unittest.TestCase):
         g = Guitar()
         inv = ChordInventor(g)
         # ToDo: Add asserts
-        chords = {note: inv.buildChords(note, Interval.major) for note in NOTES}
+        chords = {note: inv.buildChords(note, ChordInterval.major) for note in NOTES}
         for note, chord in chords.items():
             for c in chord:
                 self.assertIn(c, g.chords)
@@ -37,7 +38,7 @@ class TestChordInventor(unittest.TestCase):
         g = Guitar()
         inv = ChordInventor(g)
         # ToDo: Add asserts
-        chords = {note.lower(): inv.buildChords(note, Interval.minor) for note in NOTES}
+        chords = {note.lower(): inv.buildChords(note, ChordInterval.minor) for note in NOTES}
         for note, chord in chords.items():
             for c in chord:
                 self.assertIn(c, g.chords)
@@ -46,11 +47,11 @@ class TestChordInventor(unittest.TestCase):
         self.assertIn(Chord("e", (0, 2, 2, 0, 0, 0)), chords['e'])
 
     def test_getChordNotes(self):
-        self.assertEqual({"E", "G#", "B"}, ChordInventor.getChordNotes("E", Interval.major))
-        self.assertEqual({"B", "D#", "F#"}, ChordInventor.getChordNotes("B", Interval.major))
-        self.assertEqual({"A#", "D", "F"}, ChordInventor.getChordNotes("A#", Interval.major))
-        self.assertEqual({"E", "G", "A#"}, ChordInventor.getChordNotes("E", Interval.diminished))
-        self.assertEqual({"A", "C", "E"}, ChordInventor.getChordNotes("A", Interval.minor))
+        self.assertEqual({"E", "G#", "B"}, ChordInventor.getChordNotes("E", ChordInterval.major))
+        self.assertEqual({"B", "D#", "F#"}, ChordInventor.getChordNotes("B", ChordInterval.major))
+        self.assertEqual({"A#", "D", "F"}, ChordInventor.getChordNotes("A#", ChordInterval.major))
+        self.assertEqual({"E", "G", "A#"}, ChordInventor.getChordNotes("E", ChordInterval.diminished))
+        self.assertEqual({"A", "C", "E"}, ChordInventor.getChordNotes("A", ChordInterval.minor))
 
         self.assertEqual(set(NOTES), ChordInventor.getChordNotes("C", 11*[1]))
 
