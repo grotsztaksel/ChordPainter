@@ -10,7 +10,7 @@ __date__ = '2021-10-12'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 from PyQt5.QtCore import Qt, QSize, QPoint, QRect
-from PyQt5.QtGui import QColor, QPainter, QPixmap, QBrush, QImage
+from PyQt5.QtGui import QColor, QPainter, QPixmap, QBrush, QImage, QFontMetrics
 
 from chord import Chord
 
@@ -237,8 +237,23 @@ class FretPainter(AbstractPainter):
         font.setPixelSize(rect.height() * 0.8)
         self.p.setFont(font)
 
-        # self.p.drawRect(rect)
+        m = QFontMetrics(font, self.pixmap)
+        bw = m.boundingRect(rom).width()
+        need_rotate = bw > rect.width()
+        if need_rotate:
+            # Left Center must become Top Center, make the rectangle wider
+            self.p.rotate(-90)
+            y = rect.center().y()
+            x = rect.left()
+            h = rect.height()
+            new_x = -y
+            new_y = x
+            rect = QRect(new_x - bw / 2, new_y, bw, h)
+
         self.p.drawText(rect, Qt.AlignCenter, rom)
+        if need_rotate:
+            self.p.rotate(90)
+            self.p.restore()
 
 
 class SymbolPainter(AbstractPainter):
