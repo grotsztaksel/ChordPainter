@@ -44,10 +44,25 @@ class ChordInventor(object):
 
     def buildChords(self, root: str, chordType=None):
 
+        notes = ChordInventor.getChordNotes(root, chordType)
         chords = []
 
-        for fret in range(0, self.instrument.nfrets - self.maxFingerStretch):
-            pass
+        for fret in range(1, self.instrument.nfrets - self.maxFingerStretch + 1):
+            # PossibleFrets tells what frets can be closed on each string with the given "initial" fret and finger
+            # stretch; [0] is for an open string
+            possibleFrets = [0] + range(fret, fret + self.maxFingerStretch)
+
+            self.buildChordsInRange(notes, possibleFrets)
+
+    def buildChordsInRange(self, notes, possibleFrets):
+        """
+        Try building chords with given notes on the given range of frets
+        """
+        closed = [None] * len(self.instrument.strings)
+        for f in possibleFrets:
+            for s, string in enumerate(self.instrument.strings):
+                if self.notes[s][f] in notes:
+                    closed[s] = f
 
     @staticmethod
     def getChordNotes(root: str, chordIntervals=None):
