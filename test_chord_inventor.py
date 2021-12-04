@@ -9,8 +9,8 @@ __date__ = '2021-12-03'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 import unittest
-from banjo import Banjo_5string
-from guitar import Guitar
+from Instruments.banjo import Banjo_5string
+from Instruments.guitar import Guitar
 from chord_inventor import ChordInventor, Interval, NOTES
 from chord import Chord
 

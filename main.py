@@ -14,7 +14,7 @@ import sys
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication
 
-from banjo import Banjo_5string as Banjo
+from Instruments.banjo import Banjo_5string as Banjo
 from chord_painter import ChordPainter
 from file_register import FileRegister
 from main_window import MainWindow
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     size = QSize(141, 320)
     banjo = Banjo()
     targetDir = os.path.join(os.getcwd(), "images")
-    targetDir = r'C:\Users\piotr\Documents\Songs XML\SeparateFiles\img'
+    # targetDir = r'C:\Users\piotr\Documents\Songs XML\SeparateFiles\img'
 
     filereg = FileRegister()
 

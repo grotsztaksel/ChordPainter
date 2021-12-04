@@ -9,7 +9,7 @@ __all__ = ['Banjo_5string']
 __date__ = '2021-10-14'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
-from instrument import Instrument
+from Instruments.instrument import Instrument
 
 
 class Banjo_5string(Instrument):

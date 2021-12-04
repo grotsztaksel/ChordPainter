@@ -9,7 +9,7 @@ __all__ = ['ChordInventor']
 __date__ = '2021-12-03'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
-from instrument import Instrument
+from Instruments.instrument import Instrument
 
 NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
