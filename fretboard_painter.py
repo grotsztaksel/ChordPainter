@@ -55,7 +55,7 @@ class FretboardPainter(object):
     def setFontSize(self, size):
         """Set font size. Basing on that, set the overall size of the picture"""
         self.fontSize = size
-        self.fret0Position = (self.fontSize / 0.8)
+        self.fret0Position = self.fontSize * self.fingerCircleSizeFactor
         d = self.calculateFretboardLength(self.fontSize, self.instrument.nfrets)
 
         h = self.fret0Position + d
@@ -66,7 +66,7 @@ class FretboardPainter(object):
 
     def calculateFretboardLength(self, fontSize, nfrets):
         # Determine the scale length (length of a string in pixels)
-        w = self.fret0Position * 1.4  # size of the last fret. Has enough space for the notes annotation.
+        w = self.fret0Position  # size of the last fret. Has enough space for the notes annotation.
         # d = s - (s/(2^(n/12))) is the formula for the fret distance from the nut
         # therefore fret width:
         # w = s - (s/(2^(n/12))) - s - (s/(2^(n-1/12)))
