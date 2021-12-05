@@ -28,8 +28,21 @@ class FretboardModel(QAbstractItemModel):
         self.chordInventor = ChordInventor(self.instrument)
         self.editable = False
 
+    def hasIndex(self, row: int, column: int, parent: QModelIndex = ...) -> bool:
+        if parent.isValid():
+            return False
+        return row < self.rowCount(parent) and column < self.columnCount(parent)
+
+    def parent(self, index: QModelIndex) -> QModelIndex:
+        return QModelIndex()
+
+    def index(self, row: int, column: int, parent: QModelIndex = ...) -> QModelIndex:
+        if not self.hasIndex(row, column, parent):
+            return QModelIndex()
+        return self.createIndex(row, column)
+
     def rowCount(self, parent: QModelIndex = ...) -> int:
-        return self.instrument.nfrets
+        return self.instrument.nfrets + 1
 
     def columnCount(self, parent: QModelIndex = ...) -> int:
         return len(self.instrument.strings)
@@ -50,10 +63,12 @@ class FretboardModel(QAbstractItemModel):
         if fret < self.instrument.rootfrets[string]:
             return Qt.NoItemFlags
         elif fret == self.instrument.rootfrets[string] and self.editable:
-            return super(FretboardModel, self).flags() | Qt.ItemIsEditable
+            return super(FretboardModel, self).flags(index) | Qt.ItemIsEditable
         else:
-            return super(FretboardModel, self).flags()
+            return super(FretboardModel, self).flags(index)
 
     def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> typing.Any:
-        if role == Qt.DisplayRole or role == Qt.EditRole:
-            return self.getNote(len(self.instrument.strings) - index.column(), index.row())
+        if role == Qt.TextAlignmentRole:
+            return Qt.AlignCenter
+        elif role == Qt.DisplayRole or role == Qt.EditRole:
+            return self.instrument.getNote(len(self.instrument.strings) - index.column() - 1, index.row())
