@@ -27,7 +27,7 @@ class FretboardPainter(object):
 
         self.evenFretWidth = True
 
-        self.chordNotes = ["A", "C", "E"]
+        self.chordNotes = ["G", "A#", "D"]
 
         self.p = QPainter()
         self.fretBoardRect = QRect()  # Rectangle of the fretboard itself (smaller than the viewport, using margins)
@@ -36,7 +36,7 @@ class FretboardPainter(object):
         self.fontSize = 12
         self.fingerCircleSizeFactor = 1 / 0.6  # How many times the circle in which the note is inscribed is larger than
         # the font size
-        self.fret0Position = self.fontSize * self.fingerCircleSizeFactor
+
         self.scaleLength = 0
 
         self.size = size
@@ -60,7 +60,7 @@ class FretboardPainter(object):
 
         d = self.calculateFretboardLength(self.instrument.nfrets)
 
-        h = max(self.size.height(), self.fret0Position + d)
+        h = max(self.size.height(), self.fontSize * self.fingerCircleSizeFactor + d)
         w = max(self.size.width(),
                 self.fontSize * self.fingerCircleSizeFactor * (1 + len(self.instrument.strings)))  # +1 so that
         # there's room for fret numbers
@@ -106,7 +106,7 @@ class FretboardPainter(object):
             d = ifret * w
         else:
             d = self.scaleLength - (self.scaleLength / pow(2, (ifret / 12)))
-        return self.fret0Position + d
+        return self.fretBoardRect.top() + d
 
     def setSize(self, size: QSize):
         """
@@ -118,7 +118,9 @@ class FretboardPainter(object):
         self.pixmap.fill(QColor(Qt.white))
         self.p.begin(self.pixmap)
         self.p.setRenderHint(QPainter.Antialiasing)
-        self.fretBoardRect = self.p.viewport().marginsRemoved(QMargins(25, self.fret0Position, 5, 5))
+        self.fretBoardRect = self.p.viewport().marginsRemoved(
+            QMargins(25, self.fontSize * self.fingerCircleSizeFactor + 5, 5, 5)
+        )
 
     def setChordNotes(self, notes):
         """
@@ -160,7 +162,11 @@ class FretboardPainter(object):
             )
 
     def fretRect(self, fret):
-        top = self.fretPos(fret - 1)
+        if fret == 0:
+            top = 0
+        else:
+            top = self.fretPos(fret - 1)
+
         bottom = self.fretPos(fret)
         left = self.fretBoardRect.left()
         right = self.fretBoardRect.right()
@@ -246,7 +252,11 @@ class FretboardPainter(object):
         w = self.fretBoardRect.width()
         l = self.fretBoardRect.left() + (nstrings - i - 1) * (w / nstrings)
         r = self.fretBoardRect.left() + (nstrings - i + 0) * (w / nstrings)
-        fr = self.fretRect(fret)
+        if fret == 0:
+            fr = self.fretRect(1)
+            fr.moveBottom(self.fretBoardRect.top())
+        else:
+            fr = self.fretRect(fret)
 
         h = self.fontSize * self.fingerCircleSizeFactor
         top = fr.top()
