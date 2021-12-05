@@ -22,8 +22,8 @@ from chord_inventor import ChordInventor
 from chord_painter import ChordPainter
 from file_register import FileRegister
 from fretboard_painter import FretboardPainter
-from main_window import MainWindow
 from music_theory import NOTES, ChordInterval
+from GUI.quick_preview import QuickPreview
 
 
 class Interval(object):
@@ -53,21 +53,11 @@ if __name__ == '__main__':
 
     if not os.path.isdir(targetDir):
         os.makedirs(targetDir)
-    for instrument in [banjo, guitar, uke]:
-        for note in NOTES:
-            for typ in chordTypes:
-                painter = FretboardPainter(size, instrument)
-                fileName = "{}_{}_{}.png".format(instrument.name, note, typ)
-                painter.setChordNotes(ChordInventor.getChordNotes(note, getattr(ChordInterval, typ)))
-                painter.draw()
-                px = painter.pixmap
-                px.save(os.path.join(targetDir, fileName))
-                print("Saved ", fileName)
 
 
     # painter = FretboardPainter(size, banjo)
     # px = painter.pixmap
-    # mw = MainWindow(None, px)
+    # mw = QuickPreview(None, px)
     # mw.setWindowTitle("Banjo")
     # mw.exec()
     # for chord in banjo.chords:
