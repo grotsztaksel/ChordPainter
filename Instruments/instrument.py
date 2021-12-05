@@ -11,6 +11,7 @@ __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 import warnings
 from chord import Chord
+from music_theory import NOTES
 
 
 class Instrument(object):
@@ -32,6 +33,8 @@ class Instrument(object):
         # Numbers of frets on which each string begins. Usually is all zeros, but for bluegrass banjo
         # the 5th string will have value 5
         self.rootfrets = list()
+
+        self.dotsOnFrets = list()
 
     def defineChord(self, name, scheme=None, frets=None, fingers=None, prefix=None):
         """
@@ -68,6 +71,18 @@ class Instrument(object):
         warnings.warn(
             "{} describes {} strings, while {} has {} strings".format(chord.name, len(chord.scheme),
                                                                       self.name, len(self.strings)))
+
+    def getNote(self, string, fret):
+        """
+        Return the name of the note on the given string and fret
+        """
+
+        if fret < self.rootfrets[string]:
+            return None
+        root = self.strings[string]
+        ibase = NOTES.index(root)
+
+        return NOTES[(ibase - self.rootfrets[string] + fret) % 12]
 
 
 def old2new(old):
