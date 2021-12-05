@@ -9,7 +9,7 @@ __all__ = ['FretboardPainter']
 __date__ = '2021-12-04'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
-from PyQt5.QtCore import Qt, QSize, QPoint, QRect
+from PyQt5.QtCore import Qt, QSize, QPoint, QRect, QMargins
 from PyQt5.QtGui import QPixmap, QColor, QPainter, QBrush, QPen
 
 from music_theory import NOTES
@@ -25,12 +25,14 @@ class FretboardPainter(object):
         self.instrument = instrument
         self.offsets = None
 
-        self.chordNotes = None
+        self.chordNotes = ["A", "C", "E"]
 
         self.p = QPainter()
         self.pixmap = None
 
         self.fontSize = 12
+        self.fingerCircleSizeFactor = 1 / 0.6  # How many times the circle in which the note is inscribed is larger than
+        # the font size
         self.fret0Position = 0
         self.scaleLength = 0
 
@@ -39,10 +41,15 @@ class FretboardPainter(object):
 
         self.string_thickness = 1  # width of the string lines (pixels)
         self.string_color = QColor(Qt.black)
-        self.dotSize = 0.5  # fraction of the distance between strings
         self.bar_zero_width = 8  # width of the 0-th fret (pixels)
         self.fret_line_width = 2
+        self.dotColor = QColor(Qt.gray)
 
+        self.fretBoardRect = QRect()  # Rectangle of the fretboard itself (smaller than the viewport, using margins)
+
+        if self.instrument is not None:
+            for dotFret in self.instrument.dotsOnFrets:
+                self.drawDot(dotFret)
         for i, s in enumerate(self.instrument.strings):
             self.drawString(i)
 
@@ -67,7 +74,7 @@ class FretboardPainter(object):
         # Therefore
         # s = w / (  1/(2^(n/12)) - 1/(2^((n-1)/12)) )
         n = nfrets  # for shorter notation
-        s = w / (1 / pow(2, ((n - 1) / 12)) - 1 / pow(2, (n / 12)))
+        s = w / (1 / pow(2, ((n) / 12)) - 1 / pow(2, ((n + 1) / 12)))
         self.scaleLength = s
         d = s - (s / pow(2, (n / 12)))  # This is the length of the entire fretboard.
 
@@ -90,6 +97,7 @@ class FretboardPainter(object):
         self.pixmap.fill(QColor(Qt.white))
         self.p.begin(self.pixmap)
         self.p.setRenderHint(QPainter.Antialiasing)
+        self.fretBoardRect = self.p.viewport().marginsRemoved(QMargins(2, 2, 2, 2))
 
     def setChordNotes(self, notes):
         """
@@ -99,13 +107,20 @@ class FretboardPainter(object):
         self.chordNotes = notes
 
     def drawDot(self, fret):
-        radius = int(self.dotSize * self.parent.pos_string[0])
+        radius = 8
 
         center = self.fretRect(fret).center()
-        if not self.fretBoard.contains(center):
+        if not self.p.viewport().contains(center):
             return
         topLeft = center - QPoint(radius, radius)
         bottomRight = center + QPoint(radius, radius)
+        dots = 1
+        rect = QRect(topLeft, bottomRight)
+
+        if fret == 12:
+
+            dots = 2
+            rect.moveLeft(0.2 * self.fretRect(fret).width())
 
         pen = self.p.pen()
         brush = QBrush(Qt.SolidPattern)
@@ -115,7 +130,10 @@ class FretboardPainter(object):
         self.p.setBrush(brush)
         self.p.setPen(pen)
 
-        self.p.drawEllipse(QRect(topLeft, bottomRight))
+        for i in range(dots):
+            # Draw 2 dots for the 12th fret and one for the others
+            self.p.drawEllipse(rect)
+            rect.moveRight(0.8 * self.fretRect(fret).width())
 
     def fretRect(self, fret):
         top = self.fretPos(fret - 1)
@@ -132,54 +150,57 @@ class FretboardPainter(object):
         font.setPixelSize(self.fontSize)
         self.p.setFont(font)
 
-        nstrings = len(self.instrument.strings)
-        w = self.p.viewport().width()
-
         openNote = self.instrument.strings[i]
         ibase = NOTES.index(openNote)
-        rootFret = self.instrument.rootfrets[i]
-
-        l = self.p.viewport().left() + (nstrings - i - 1) * (w / nstrings)
-        r = self.p.viewport().left() + (nstrings - i + 0) * (w / nstrings)
-
-        nutPos = self.fretPos(rootFret)
-
-        # Rectangle for the open string note annotation
-
-        top = nutPos - (r - l)
-
-        rect = QRect(l, top, (r - l), (r - l))
-        height = rect.height()
-        size = rect.size()
-        c = rect.center().x()
-
-        self.annotateNote(openNote, rect)
-
-        # Draw the string
-        pen = self.p.pen()
-        pen.setColor(self.string_color)
-        pen.setWidth(self.string_thickness)
-        pen.setStyle(Qt.SolidLine)
-        self.p.setPen(pen)
-        self.p.drawLine(QPoint(c, nutPos), QPoint(c, self.p.viewport().bottom()))
 
         # Draw the 0-th fret bar
+        pen = self.p.pen()
         pen.setWidth(self.bar_zero_width)
         self.p.setPen(pen)
-        self.p.drawLine(QPoint(l, nutPos), QPoint(r, nutPos))
+        rect = self.fretRect(0)
+        self.p.drawLine(rect.bottomLeft(), rect.bottomRight())
+        rect = self.getNoteRect(i, 0)
+        # Annotate the open string note
+        self.annotateNote(openNote, rect)
 
-        for f in range(self.instrument.rootfrets[i]+1, self.instrument.nfrets + 1):
+        # For each fret, draw the segments of strings (break them to make room for the note annotations) frets
+        # and the note annotations
+        for f in range(self.instrument.rootfrets[i] + 1, self.instrument.nfrets + 1):
             noteName = NOTES[(ibase - self.instrument.rootfrets[i] + f) % 12]
-            fretCenter = self.fretRect(f).center()
-            fretBottom = self.fretRect(f).bottom()
-            print(f"fret {f}, bottom {fretBottom}")
+            fretRect = self.fretRect(f)
 
+            # Draw the fret
             pen.setWidth(self.fret_line_width)
+            pen.setColor(Qt.black)
+            pen.setStyle(Qt.SolidLine)
             self.p.setPen(pen)
-            self.p.drawLine(QPoint(l, fretBottom), QPoint(r, fretBottom))
+            self.p.drawLine(fretRect.bottomLeft(), fretRect.bottomRight())
 
-            rect = QRect(QPoint(l, fretCenter.y() - height / 2), size)
+            # Draw the note
+            rect = self.getNoteRect(i, f)
             self.annotateNote(noteName, rect)
+
+            # Draw two segments of the string - before and after the note
+            pen.setWidth(self.string_thickness)
+            pen.setColor(self.string_color)
+            self.p.setPen(pen)
+            self.p.drawLine(QPoint(rect.center().x(), fretRect.top()), QPoint(rect.center().x(), rect.top()))
+            self.p.drawLine(QPoint(rect.center().x(), fretRect.bottom()), QPoint(rect.center().x(), rect.bottom()))
+
+    def getNoteRect(self, i, fret):
+        """
+        Returns the rectangle in which the note annotation should be inscribed. The rectangle top/bottom/center can
+        also be used as points for, for example, string fragments
+        """
+        nstrings = len(self.instrument.strings)
+        w = self.p.viewport().width()
+        l = self.p.viewport().left() + (nstrings - i - 1) * (w / nstrings)
+        r = self.p.viewport().left() + (nstrings - i + 0) * (w / nstrings)
+        bottom = self.fretPos(fret)
+        h = self.fontSize * self.fingerCircleSizeFactor
+        top = bottom - h - 2
+        rect = QRect(l, top, (r - l), h)
+        return rect
 
     def annotateNote(self, noteName, rect):
         """
@@ -203,17 +224,20 @@ class FretboardPainter(object):
         font = self.p.font()
         if isRootNote:
             brush.setColor(Qt.black)
-            pen.setColor(Qt.white)
+            pen.setStyle(Qt.NoPen)
             font.setBold(True)
+            textColor = QColor(Qt.white)
         elif isChordNote:
-            brush.setColor(Qt.white)
-            pen.setColor(Qt.black)
+            brush.setColor(QColor(Qt.darkGray).darker(120))
+            pen.setStyle(Qt.NoPen)
             font.setBold(False)
+            textColor = QColor(Qt.white)
         else:
-            brush.setColor(Qt.white)
+            brush.setColor(QColor(255, 255, 255, 200))
             pen.setColor(Qt.black)
             pen.setStyle(Qt.NoPen)
             font.setBold(False)
+            textColor = QColor(Qt.black)
         brush.setStyle(Qt.SolidPattern)
         self.p.setFont(font)
         self.p.setPen(pen)
@@ -222,6 +246,7 @@ class FretboardPainter(object):
         self.p.drawEllipse(rect)
 
         pen.setStyle(Qt.SolidLine)
+        pen.setColor(textColor)
         self.p.setPen(pen)
         self.p.drawText(rect, Qt.AlignCenter, noteName)
 
