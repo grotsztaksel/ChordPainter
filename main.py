@@ -15,6 +15,8 @@ import typing
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication
 
+from GUI.fretboard_model import FretboardModel
+from GUI.mainwindow import MainWindow
 from Instruments.banjo import Banjo_5string as Banjo
 from Instruments.guitar import Guitar
 from Instruments.ukulele import Ukulele
@@ -57,9 +59,11 @@ if __name__ == '__main__':
 
     # painter = FretboardPainter(size, banjo)
     # px = painter.pixmap
-    # mw = QuickPreview(None, px)
-    # mw.setWindowTitle("Banjo")
-    # mw.exec()
+    mw = MainWindow(None)
+    model = FretboardModel(mw, banjo)
+    mw.tableView.setModel(model)
+    mw.setWindowTitle("Banjo")
+    mw.show()
     # for chord in banjo.chords:
     #     painter = ChordPainter(chord, size, banjo)
     #     painter.drawEmpty()
@@ -77,4 +81,4 @@ if __name__ == '__main__':
     #     print("Saved ", pngName)
     #     filereg.register(pngName)
 
-    sys.exit(app.exit())
+    sys.exit(app.exec_())
