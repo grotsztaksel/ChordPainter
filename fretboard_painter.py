@@ -277,13 +277,17 @@ class FretboardPainter(object):
         if isRootNote:
             brush.setColor(Qt.black)
             brush.setStyle(Qt.SolidPattern)
-            pen.setStyle(Qt.NoPen)
+            pen.setStyle(Qt.SolidLine)
+            pen.setWidth(1)
+            pen.setColor(Qt.black)
             font.setBold(True)
             textColor = QColor(Qt.white)
         elif isChordNote:
-            brush.setColor(QColor(Qt.darkGray).darker(120))
+            brush.setColor(QColor(Qt.darkGray).darker(135))
             brush.setStyle(Qt.SolidPattern)
-            pen.setStyle(Qt.NoPen)
+            pen.setStyle(Qt.SolidLine)
+            pen.setWidth(1)
+            pen.setColor(Qt.black)
             font.setBold(False)
             textColor = QColor(Qt.white)
         else:
