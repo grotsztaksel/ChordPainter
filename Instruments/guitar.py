@@ -16,7 +16,7 @@ class Guitar(Instrument):
     def __init__(self):
         super().__init__()
         self.name = "Guitar"
-        self.strings = list("EHGDAE")
+        self.strings = list("EBGDAE")
         self.nfrets = 20
         self.rootfrets = len(self.strings) * [0]
 
