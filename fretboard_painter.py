@@ -42,7 +42,7 @@ class FretboardPainter(object):
 
         self.string_thickness = 1  # width of the string lines (pixels)
         self.string_color = QColor(Qt.black)
-        self.bar_zero_width = 8  # width of the 0-th fret (pixels)
+        self.bar_zero_width = 6  # width of the 0-th fret (pixels)
         self.fret_line_width = 2
         self.dotColor = QColor(Qt.gray)
 
@@ -95,7 +95,7 @@ class FretboardPainter(object):
         self.pixmap.fill(QColor(Qt.white))
         self.p.begin(self.pixmap)
         self.p.setRenderHint(QPainter.Antialiasing)
-        self.fretBoardRect = self.p.viewport().marginsRemoved(QMargins(2, 2, 2, 2))
+        self.fretBoardRect = self.p.viewport().marginsRemoved(QMargins(5, 5, 5, 5))
 
     def setChordNotes(self, notes):
         """
@@ -162,7 +162,7 @@ class FretboardPainter(object):
         self.p.drawLine(rect.bottomLeft(), rect.bottomRight())
 
         # Annotate the open string note
-        self.annotateNote(openNote, rect)
+        self.annotateNote(openNote, self.square(rect))
 
         # For each fret, draw the segments of strings (break them to make room for the note annotations) frets
         # and the note annotations
@@ -179,7 +179,8 @@ class FretboardPainter(object):
 
             # Draw the note
             rect = self.getNoteRect(i, f)
-            self.annotateNote(noteName, rect)
+
+            self.annotateNote(noteName, self.square(rect))
 
             # Draw two segments of the string - before and after the note
             pen.setWidth(self.string_thickness)
@@ -187,6 +188,24 @@ class FretboardPainter(object):
             self.p.setPen(pen)
             self.p.drawLine(QPoint(rect.center().x(), fretRect.top()), QPoint(rect.center().x(), rect.top()))
             self.p.drawLine(QPoint(rect.center().x(), fretRect.bottom()), QPoint(rect.center().x(), rect.bottom()))
+
+    @staticmethod
+    def square(rect, maximize=False):
+        """
+        Return a square with the center in the center the same as the input rectangle. With the size adjusted to match
+        the largest (maximize = True) or smallest (maximize = False) side of the inpiut rect
+        """
+        c = rect.center()
+        rect = QRect(rect)
+        w = rect.width()
+        h = rect.height()
+        if maximize:
+            s = max(w, h)
+        else:
+            s = min(w, h)
+        rect.setSize(QSize(s, s))
+        rect.moveCenter(c)
+        return rect
 
     def getNoteRect(self, i, fret):
         """
