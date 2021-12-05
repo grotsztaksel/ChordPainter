@@ -61,7 +61,7 @@ if __name__ == '__main__':
                 painter.setChordNotes(ChordInventor.getChordNotes(note, getattr(ChordInterval, typ)))
                 painter.draw()
                 px = painter.pixmap
-                px.save(fileName)
+                px.save(os.path.join(targetDir, fileName))
                 print("Saved ", fileName)
 
 
