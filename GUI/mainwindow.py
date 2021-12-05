@@ -26,4 +26,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tableView.setShowGrid(False)
         self.tableView.setItemDelegate(FretboardDelegate(self.tableView))
 
-
+    def adjustSizes(self):
+        model = self.tableView.model()
+        w = 0
+        ncol = model.columnCount()
+        for i in range(ncol):
+            w = max(w, self.tableView.sizeHintForColumn(i))
+        for i in range(ncol):
+            self.tableView.setColumnWidth(i, w)

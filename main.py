@@ -63,6 +63,7 @@ if __name__ == '__main__':
     model = FretboardModel(mw, banjo)
     mw.tableView.setModel(model)
     mw.setWindowTitle("Banjo")
+    mw.adjustSizes()
     mw.show()
     # for chord in banjo.chords:
     #     painter = ChordPainter(chord, size, banjo)
