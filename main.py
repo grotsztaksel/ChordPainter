@@ -38,7 +38,7 @@ if __name__ == '__main__':
     banjo = Banjo()
     guitar = Guitar()
     uke = Ukulele()
-    targetDir = os.path.join(os.getcwd(), "images")
+    targetDir = os.path.join(os.getcwd(), "img")
     # targetDir = r'C:\Users\piotr\Documents\Songs XML\SeparateFiles\img'
 
     filereg = FileRegister()
