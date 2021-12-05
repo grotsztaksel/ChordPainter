@@ -95,7 +95,7 @@ class FretboardPainter(object):
         self.pixmap.fill(QColor(Qt.white))
         self.p.begin(self.pixmap)
         self.p.setRenderHint(QPainter.Antialiasing)
-        self.fretBoardRect = self.p.viewport().marginsRemoved(QMargins(5, 5, 5, 5))
+        self.fretBoardRect = self.p.viewport().marginsRemoved(QMargins(25, 5, 5, 5))
 
     def setChordNotes(self, notes):
         """
@@ -117,7 +117,7 @@ class FretboardPainter(object):
 
         if fret == 12:
             dots = 2
-            rect.moveLeft(0.2 * self.fretRect(fret).width())
+            rect.moveCenter(QPoint(self.fretRect(fret).left() + 0.2 * self.fretRect(fret).width(), rect.center().y()))
 
         pen = self.p.pen()
         brush = QBrush(Qt.SolidPattern)
@@ -130,7 +130,7 @@ class FretboardPainter(object):
         for i in range(dots):
             # Draw 2 dots for the 12th fret and one for the others
             self.p.drawEllipse(rect)
-            rect.moveRight(0.8 * self.fretRect(fret).width())
+            rect.moveCenter(QPoint(self.fretRect(fret).right() - 0.2 * self.fretRect(fret).width(), rect.center().y()))
 
     def fretRect(self, fret):
         top = self.fretPos(fret - 1)
