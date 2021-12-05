@@ -196,7 +196,7 @@ class FretboardPainter(object):
         self.p.drawLine(QPoint(rect.left(), b), QPoint(rect.right(), b))
 
         # Annotate the open string note
-        self._annotateNote(openNote, self.square(rect))
+        self._annotateNote(openNote, square(rect))
 
         # For each fret, draw the segments of strings (break them to make room for the note annotations) frets
         # and the note annotations
