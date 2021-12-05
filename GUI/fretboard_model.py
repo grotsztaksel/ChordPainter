@@ -31,7 +31,7 @@ class FretboardModel(QAbstractItemModel):
         self.chordInventor = ChordInventor(self.instrument)
         self.editable = True
 
-    def hasIndex(self, row: int, column: int, parent: QModelIndex = ...) -> bool:
+    def hasIndex(self, row: int, column: int, parent: QModelIndex = QModelIndex()) -> bool:
         if parent.isValid():
             return False
         return row < self.rowCount(parent) and column < self.columnCount(parent)
@@ -39,15 +39,15 @@ class FretboardModel(QAbstractItemModel):
     def parent(self, index: QModelIndex) -> QModelIndex:
         return QModelIndex()
 
-    def index(self, row: int, column: int, parent: QModelIndex = ...) -> QModelIndex:
+    def index(self, row: int, column: int, parent: QModelIndex = QModelIndex()) -> QModelIndex:
         if not self.hasIndex(row, column, parent):
             return QModelIndex()
         return self.createIndex(row, column)
 
-    def rowCount(self, parent: QModelIndex = ...) -> int:
+    def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:
         return self.instrument.nfrets + 1
 
-    def columnCount(self, parent: QModelIndex = ...) -> int:
+    def columnCount(self, parent: QModelIndex = QModelIndex()) -> int:
         return len(self.instrument.strings)
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.DisplayRole) -> typing.Any:
