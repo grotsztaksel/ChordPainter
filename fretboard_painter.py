@@ -175,7 +175,7 @@ class FretboardPainter(object):
             pen.setColor(Qt.black)
             pen.setStyle(Qt.SolidLine)
             self.p.setPen(pen)
-            self.p.drawLine(fretRect.bottomLeft(), fretRect.bottomRight())
+            self.p.drawLine(rect.bottomLeft(), rect.bottomRight())
 
             # Draw the note
             rect = self.getNoteRect(i, f)
