@@ -11,7 +11,8 @@ __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 import typing
 
-from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex
+from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QSize, QRect, QPoint
+from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QStyledItemDelegate, QWidget, QSpinBox
 
 from Instruments.instrument import Instrument
@@ -61,7 +62,7 @@ class FretboardModel(QAbstractItemModel):
         Allow editing open string notes. Do not allow selecting cells before the root fret
         """
         fret = index.row()
-        string = len(self.instrument.strings) - index.column() - 1
+        string = self.stringFromIndex(index)
         if fret < self.instrument.rootfrets[string]:
             return Qt.NoItemFlags
         elif fret == self.instrument.rootfrets[string] and self.editable:
@@ -73,14 +74,17 @@ class FretboardModel(QAbstractItemModel):
         if role == Qt.TextAlignmentRole:
             return Qt.AlignCenter
         elif role == Qt.DisplayRole or role == Qt.EditRole:
-            return self.instrument.getNote(len(self.instrument.strings) - index.column() - 1, index.row())
+            return self.instrument.getNote(self.stringFromIndex(index), index.row())
+
+    def stringFromIndex(self, index):
+        return len(self.instrument.strings) - index.column() - 1
 
     def setData(self, index: QModelIndex, value: typing.Any, role: int = Qt.EditRole) -> bool:
         if role != Qt.EditRole:
             return False
         if not self.editable:
             return False
-        string = len(self.instrument.strings) - index.column() - 1
+        string = self.stringFromIndex(index)
         self.instrument.strings[string] = value
         return True
 
@@ -109,6 +113,22 @@ class RootNoteSpinBox(QSpinBox):
 
 
 class FretboardDelegate(QStyledItemDelegate):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.fretPen = QPen()
+        self.fretPen.setStyle(Qt.SolidLine)
+        self.fretPen.setWidth(2)
+        self.fretPen.setColor(Qt.black)
+
+        self.rootFretPen = QPen(self.fretPen)
+        self.rootFretPen.setWidth(6)
+
+        self.stringPen = QPen()
+        self.stringPen.setColor(Qt.black)
+        self.stringPen.setWidth(1)
+        self.stringPen.setStyle(Qt.SolidLine)
+
     def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QModelIndex) -> QWidget:
         return RootNoteSpinBox(parent)
 
@@ -117,3 +137,27 @@ class FretboardDelegate(QStyledItemDelegate):
 
     def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex) -> None:
         model.setData(index, editor.textFromValue(editor.value()), Qt.EditRole)
+
+    def paint(self, painter: QPainter, option: 'QStyleOptionViewItem', index: QModelIndex) -> None:
+        fret = index.row()
+        string = index.model().stringFromIndex(index)
+        drawString = False
+
+        if fret >= index.model().instrument.rootfrets[string]:
+            painter.setPen(self.rootFretPen)
+            if fret > index.model().instrument.rootfrets[string]:
+                painter.setPen(self.fretPen)
+                drawString = True
+            painter.drawLine(option.rect.bottomLeft(), option.rect.bottomRight())
+
+        if drawString:
+            painter.setPen(self.stringPen)
+            h = painter.font().pointSize() + 10
+
+            rect = QRect(option.rect.center(), QSize(h, h))
+            rect.moveCenter(option.rect.center())
+            c = rect.center().x()
+            painter.drawLine(QPoint(c, option.rect.top()), QPoint(c, rect.top()))
+            painter.drawLine(QPoint(c, rect.bottom()), QPoint(c, option.rect.bottom()))
+
+        super(FretboardDelegate, self).paint(painter, option, index)
