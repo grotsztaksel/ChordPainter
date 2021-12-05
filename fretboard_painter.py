@@ -62,7 +62,6 @@ class FretboardPainter(object):
 
         size = QSize(self.size.width(), h)
         self.setSize(size)
-        # Add space for the open string annotation
 
     def calculateFretboardLength(self, fontSize, nfrets):
         # Determine the scale length (length of a string in pixels)
@@ -151,13 +150,17 @@ class FretboardPainter(object):
         openNote = self.instrument.strings[i]
         ibase = NOTES.index(openNote)
 
+        rect = self.getNoteRect(i, self.instrument.rootfrets[i])
+
         # Draw the 0-th fret bar
         pen = self.p.pen()
         pen.setWidth(self.bar_zero_width)
+        pen.setColor(Qt.black)
+        pen.setStyle(Qt.SolidLine)
         self.p.setPen(pen)
-        rect = self.fretRect(0)
+
         self.p.drawLine(rect.bottomLeft(), rect.bottomRight())
-        rect = self.getNoteRect(i, 0)
+
         # Annotate the open string note
         self.annotateNote(openNote, rect)
 
