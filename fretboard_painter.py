@@ -25,6 +25,8 @@ class FretboardPainter(object):
         self.instrument = instrument
         self.offsets = None
 
+        self.evenFretWidth = True
+
         self.chordNotes = ["A", "C", "E"]
 
         self.p = QPainter()
@@ -34,7 +36,7 @@ class FretboardPainter(object):
         self.fontSize = 12
         self.fingerCircleSizeFactor = 1 / 0.6  # How many times the circle in which the note is inscribed is larger than
         # the font size
-        self.fret0Position = 0
+        self.fret0Position = self.fontSize * self.fingerCircleSizeFactor
         self.scaleLength = 0
 
         self.size = size
@@ -55,26 +57,43 @@ class FretboardPainter(object):
     def setFontSize(self, size):
         """Set font size. Basing on that, set the overall size of the picture"""
         self.fontSize = size
-        self.fret0Position = self.fontSize * self.fingerCircleSizeFactor
-        d = self.calculateFretboardLength(self.fontSize, self.instrument.nfrets)
 
-        h = self.fret0Position + d
+        d = self.calculateFretboardLength(self.instrument.nfrets)
 
-        size = QSize(self.size.width(), h)
+        h = max(self.size.height(), self.fret0Position + d)
+        w = max(self.size.width(),
+                self.fontSize * self.fingerCircleSizeFactor * (1 + len(self.instrument.strings)))  # +1 so that
+        # there's room for fret numbers
+        size = QSize(w, h)
         self.setSize(size)
 
-    def calculateFretboardLength(self, fontSize, nfrets):
-        # Determine the scale length (length of a string in pixels)
-        w = self.fret0Position  # size of the last fret. Has enough space for the notes annotation.
+    def calculateFretboardLength(self, nfrets):
+        """
+        Determine the scale length (length of a string in pixels). For non-even fret widths, the fromula is taken from
+        https://www.liutaiomottola.com/formulae/fret.htm
+        The scale length is computed as follows:
+        d(last fret) - d(last but one fret) = w
+        d(n) = s - (s/(2^(n/12)))
+        where
+         - w is the minimum fret width
+         - d is the distance of the fret from the nut (0th fret bar)
+         - n is the fret number
+        """
+
+        # width of the narrowest fret. Has enough space for the notes annotation.
+        w = self.fontSize * self.fingerCircleSizeFactor
         # d = s - (s/(2^(n/12))) is the formula for the fret distance from the nut
         # therefore fret width:
         # w = s - (s/(2^(n/12))) - s - (s/(2^(n-1/12)))
         # Therefore
         # s = w / (  1/(2^(n/12)) - 1/(2^((n-1)/12)) )
         n = nfrets  # for shorter notation
-        s = w / (1 / pow(2, ((n) / 12)) - 1 / pow(2, ((n + 1) / 12)))
-        self.scaleLength = s
-        d = s - (s / pow(2, (n / 12)))  # This is the length of the entire fretboard.
+        if self.evenFretWidth:
+            d = n * w
+        else:
+            s = w / (1 / pow(2, ((n) / 12)) - 1 / pow(2, ((n + 1) / 12)))
+            self.scaleLength = s
+            d = s - (s / pow(2, (n / 12)))  # This is the length of the entire fretboard.
 
         return d
 
@@ -82,7 +101,11 @@ class FretboardPainter(object):
         """
         Return position of a fret in the pixmap. Formula taken from https://www.liutaiomottola.com/formulae/fret.htm
         """
-        d = self.scaleLength - (self.scaleLength / pow(2, (ifret / 12)))
+        if self.evenFretWidth:
+            w = self.fretBoardRect.height() / self.instrument.nfrets
+            d = ifret * w
+        else:
+            d = self.scaleLength - (self.scaleLength / pow(2, (ifret / 12)))
         return self.fret0Position + d
 
     def setSize(self, size: QSize):
@@ -95,7 +118,7 @@ class FretboardPainter(object):
         self.pixmap.fill(QColor(Qt.white))
         self.p.begin(self.pixmap)
         self.p.setRenderHint(QPainter.Antialiasing)
-        self.fretBoardRect = self.p.viewport().marginsRemoved(QMargins(25, 5, 5, 5))
+        self.fretBoardRect = self.p.viewport().marginsRemoved(QMargins(25, self.fret0Position, 5, 5))
 
     def setChordNotes(self, notes):
         """
@@ -117,7 +140,9 @@ class FretboardPainter(object):
 
         if fret == 12:
             dots = 2
-            rect.moveCenter(QPoint(self.fretRect(fret).left() + 0.2 * self.fretRect(fret).width(), rect.center().y()))
+            rect.moveCenter(
+                QPoint(self.fretRect(fret).left() + 0.2 * self.fretRect(fret).width(), rect.center().y())
+            )
 
         pen = self.p.pen()
         brush = QBrush(Qt.SolidPattern)
@@ -130,7 +155,9 @@ class FretboardPainter(object):
         for i in range(dots):
             # Draw 2 dots for the 12th fret and one for the others
             self.p.drawEllipse(rect)
-            rect.moveCenter(QPoint(self.fretRect(fret).right() - 0.2 * self.fretRect(fret).width(), rect.center().y()))
+            rect.moveCenter(
+                QPoint(self.fretRect(fret).right() - 0.2 * self.fretRect(fret).width(), rect.center().y())
+            )
 
     def fretRect(self, fret):
         top = self.fretPos(fret - 1)
@@ -158,8 +185,9 @@ class FretboardPainter(object):
         pen.setColor(Qt.black)
         pen.setStyle(Qt.SolidLine)
         self.p.setPen(pen)
+        b = self.fretRect(self.instrument.rootfrets[i]).bottom()
 
-        self.p.drawLine(rect.bottomLeft(), rect.bottomRight())
+        self.p.drawLine(QPoint(rect.left(), b), QPoint(rect.right(), b))
 
         # Annotate the open string note
         self.annotateNote(openNote, self.square(rect))
@@ -169,16 +197,18 @@ class FretboardPainter(object):
         for f in range(self.instrument.rootfrets[i] + 1, self.instrument.nfrets + 1):
             noteName = NOTES[(ibase - self.instrument.rootfrets[i] + f) % 12]
             fretRect = self.fretRect(f)
+            b = fretRect.bottom()
 
             # Draw the fret
             pen.setWidth(self.fret_line_width)
             pen.setColor(Qt.black)
             pen.setStyle(Qt.SolidLine)
             self.p.setPen(pen)
-            self.p.drawLine(rect.bottomLeft(), rect.bottomRight())
+            self.p.drawLine(QPoint(rect.left(), b), QPoint(rect.right(), b))
 
             # Draw the note
             rect = self.getNoteRect(i, f)
+            # self.p.drawRect(rect)
 
             self.annotateNote(noteName, self.square(rect))
 
@@ -193,7 +223,7 @@ class FretboardPainter(object):
     def square(rect, maximize=False):
         """
         Return a square with the center in the center the same as the input rectangle. With the size adjusted to match
-        the largest (maximize = True) or smallest (maximize = False) side of the inpiut rect
+        the largest (maximize = True) or smallest (maximize = False) side of the input rect
         """
         c = rect.center()
         rect = QRect(rect)
@@ -216,10 +246,12 @@ class FretboardPainter(object):
         w = self.fretBoardRect.width()
         l = self.fretBoardRect.left() + (nstrings - i - 1) * (w / nstrings)
         r = self.fretBoardRect.left() + (nstrings - i + 0) * (w / nstrings)
-        bottom = self.fretPos(fret)
+        fr = self.fretRect(fret)
+
         h = self.fontSize * self.fingerCircleSizeFactor
-        top = bottom - h - 2
+        top = fr.top()
         rect = QRect(l, top, (r - l), h)
+        rect.moveBottom(fr.bottom() - max(2, 0.1 * fr.height()))
         return rect
 
     def annotateNote(self, noteName, rect):
