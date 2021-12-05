@@ -28,6 +28,7 @@ class FretboardPainter(object):
         self.chordNotes = ["A", "C", "E"]
 
         self.p = QPainter()
+        self.fretBoardRect = QRect()  # Rectangle of the fretboard itself (smaller than the viewport, using margins)
         self.pixmap = None
 
         self.fontSize = 12
@@ -44,8 +45,6 @@ class FretboardPainter(object):
         self.bar_zero_width = 8  # width of the 0-th fret (pixels)
         self.fret_line_width = 2
         self.dotColor = QColor(Qt.gray)
-
-        self.fretBoardRect = QRect()  # Rectangle of the fretboard itself (smaller than the viewport, using margins)
 
         if self.instrument is not None:
             for dotFret in self.instrument.dotsOnFrets:
@@ -110,7 +109,7 @@ class FretboardPainter(object):
         radius = 8
 
         center = self.fretRect(fret).center()
-        if not self.p.viewport().contains(center):
+        if not self.fretBoardRect.contains(center):
             return
         topLeft = center - QPoint(radius, radius)
         bottomRight = center + QPoint(radius, radius)
@@ -118,7 +117,6 @@ class FretboardPainter(object):
         rect = QRect(topLeft, bottomRight)
 
         if fret == 12:
-
             dots = 2
             rect.moveLeft(0.2 * self.fretRect(fret).width())
 
@@ -138,8 +136,8 @@ class FretboardPainter(object):
     def fretRect(self, fret):
         top = self.fretPos(fret - 1)
         bottom = self.fretPos(fret)
-        left = self.p.viewport().left()
-        right = self.p.viewport().right()
+        left = self.fretBoardRect.left()
+        right = self.fretBoardRect.right()
         return QRect(QPoint(left, top), QPoint(right, bottom))
 
     def drawString(self, i):
@@ -193,9 +191,9 @@ class FretboardPainter(object):
         also be used as points for, for example, string fragments
         """
         nstrings = len(self.instrument.strings)
-        w = self.p.viewport().width()
-        l = self.p.viewport().left() + (nstrings - i - 1) * (w / nstrings)
-        r = self.p.viewport().left() + (nstrings - i + 0) * (w / nstrings)
+        w = self.fretBoardRect.width()
+        l = self.fretBoardRect.left() + (nstrings - i - 1) * (w / nstrings)
+        r = self.fretBoardRect.left() + (nstrings - i + 0) * (w / nstrings)
         bottom = self.fretPos(fret)
         h = self.fontSize * self.fingerCircleSizeFactor
         top = bottom - h - 2
