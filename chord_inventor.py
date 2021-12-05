@@ -45,7 +45,7 @@ class ChordInventor(object):
     @staticmethod
     def getChordNotes(root: str, chordIntervals=None):
         """
-        Determine the notes in a chord
+        Determine the notes in a chord. Returns a list of notes, the first note being the root note
         """
         assert root.upper() in NOTES
 
@@ -55,11 +55,11 @@ class ChordInventor(object):
         allNotes = 3 * NOTES
         noteIndex = allNotes.index(root.upper())
 
-        notes = set()
-        notes.add(root)
+        notes = [root]
+
         for intvl in chordIntervals:
             noteIndex += (intvl) % 12
-            notes.add(allNotes[noteIndex])
+            notes.append(allNotes[noteIndex])
 
         return notes
 
