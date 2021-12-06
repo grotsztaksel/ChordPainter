@@ -110,7 +110,7 @@ class RootNoteSpinBox(QSpinBox):
 
 class FretboardDelegate(QStyledItemDelegate):
     def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QModelIndex) -> QWidget:
-        return RootNoteSpinBox()
+        return RootNoteSpinBox(parent)
 
     def setEditorData(self, editor: QWidget, index: QModelIndex) -> None:
         editor.setValue(NOTES.index(index.data(Qt.EditRole)))
