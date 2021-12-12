@@ -12,7 +12,7 @@ __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 import typing
 
 from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QSize, QRect, QPoint
-from PyQt5.QtGui import QPainter, QPen
+from PyQt5.QtGui import QPainter, QPen, QColor, QBrush
 from PyQt5.QtWidgets import QStyledItemDelegate, QWidget, QSpinBox
 
 from Instruments.instrument import Instrument
@@ -30,6 +30,7 @@ class FretboardModel(QAbstractItemModel):
         self.instrument = instrument
         self.chordInventor = ChordInventor(self.instrument)
         self.editable = True
+        self.currentChord = []
 
     def hasIndex(self, row: int, column: int, parent: QModelIndex = QModelIndex()) -> bool:
         if parent.isValid():
@@ -75,6 +76,10 @@ class FretboardModel(QAbstractItemModel):
             return Qt.AlignCenter
         elif role == Qt.DisplayRole or role == Qt.EditRole:
             return self.instrument.getNote(self.stringFromIndex(index), index.row())
+        elif role == Qt.BackgroundRole and self.data(index, Qt.DisplayRole) in self.currentChord:
+            return QBrush(Qt.black)
+        elif role == Qt.ForegroundRole and self.data(index, Qt.DisplayRole) in self.currentChord:
+            return QPen(Qt.white)
 
     def stringFromIndex(self, index):
         return len(self.instrument.strings) - index.column() - 1
@@ -142,6 +147,7 @@ class FretboardDelegate(QStyledItemDelegate):
         fret = index.row()
         string = index.model().stringFromIndex(index)
         drawString = False
+        painter.setRenderHint(QPainter.Antialiasing)
 
         if fret >= index.model().instrument.rootfrets[string]:
             painter.setPen(self.rootFretPen)
@@ -150,14 +156,28 @@ class FretboardDelegate(QStyledItemDelegate):
                 drawString = True
             painter.drawLine(option.rect.bottomLeft(), option.rect.bottomRight())
 
+        h = painter.font().pointSize() + 10
+        rect = QRect(option.rect.center(), QSize(h, h))
+        rect.moveCenter(option.rect.center())
+
         if drawString:
             painter.setPen(self.stringPen)
-            h = painter.font().pointSize() + 10
-
-            rect = QRect(option.rect.center(), QSize(h, h))
-            rect.moveCenter(option.rect.center())
             c = rect.center().x()
             painter.drawLine(QPoint(c, option.rect.top()), QPoint(c, rect.top()))
             painter.drawLine(QPoint(c, rect.bottom()), QPoint(c, option.rect.bottom()))
 
-        super(FretboardDelegate, self).paint(painter, option, index)
+        note = index.data(Qt.DisplayRole)
+        if note in index.model().currentChord:
+            pen = index.data(Qt.ForegroundRole)
+            brush = index.data(Qt.BackgroundRole)
+
+            if pen is not None:
+                painter.setPen(pen)
+
+            if brush is not None:
+                painter.setBrush(brush)
+
+            painter.drawEllipse(rect)
+            painter.drawText(rect, Qt.AlignCenter, note)
+        else:
+            super(FretboardDelegate, self).paint(painter, option, index)
