@@ -14,10 +14,9 @@ import os
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot, QRect, QMargins, QPoint, QObject, QEvent
 from PyQt5.QtGui import QImage, QPainter, QRegion
-from PyQt5.QtWidgets import QFileDialog, QRadioButton, QButtonGroup, QStyle, QTableView, QToolButton, QSizePolicy
+from PyQt5.QtWidgets import QFileDialog, QStyle, QTableView, QToolButton
 
 from GUI.fretboard_model import FretboardDelegate
-from music_theory import NOTES
 
 Ui_MainWindow, QMainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__), "mainwindow.ui"))
 
@@ -26,6 +25,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None, flags=Qt.WindowFlags()):
         super().__init__(parent, flags)
         self.setupUi(self)
+
+        self.instrumentSaveButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        self.tuningSaveButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
 
         self.saveFretboardButton = QToolButton(self)
         self.saveFretboardButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
@@ -39,7 +41,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.saveChordButton.setMaximumSize(self.saveChordButton.sizeHint())
         self.saveChordButton.hide()
 
-        self.setNoteButtons()
         self.fretboardView.setShowGrid(False)
         self.fretboardView.setItemDelegate(FretboardDelegate(self.fretboardView))
 
@@ -48,19 +49,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         hmin = self.fretboardView.verticalHeader().defaultSectionSize()
         self.fretboardView.verticalHeader().setDefaultSectionSize(max(hmin, 45))
-
-    def setNoteButtons(self):
-        """
-        Set up the radiobuttons for selecting chord root notes
-        """
-        self.chordRootButtons = QButtonGroup(self)
-        iafter = 1
-        for i, note in enumerate(NOTES):
-            btn = QRadioButton(self)
-            btn.setObjectName(note)
-            btn.setText(note)
-            self.chordRootButtons.addButton(btn, i)
-            self.chordsLayout.insertWidget(iafter + i, btn)
 
     def adjustSizes(self):
         model = self.fretboardView.model()
