@@ -10,11 +10,8 @@ __date__ = '2021-10-16'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 from collections import namedtuple
-import re
 
-CHORD_SUFFIXES = r"(\+|0|6|6\/9|7|7b5|7sus4|9|sus2|sus4|add9)?"
-CHORD_ENGLISH = re.compile(r"[A-G]#?m?" + CHORD_SUFFIXES)
-CHORD_GERMAN = re.compile(r"([AaEe]s?|[CDcdF-hf-h](is)?)" + CHORD_SUFFIXES)
+from music_theory import CHORD_ENGLISH, CHORD_GERMAN
 
 Chord = namedtuple("Chord", ["name", "scheme", "prefix", "suffix"], defaults=["", ""])
 Chord.__doc__ = """
