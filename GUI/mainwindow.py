@@ -12,8 +12,8 @@ __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 import os
 
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, pyqtSlot, QRect
-from PyQt5.QtGui import QImage, QPainter
+from PyQt5.QtCore import Qt, pyqtSlot, QRect, QMargins
+from PyQt5.QtGui import QImage, QPainter, QRegion
 from PyQt5.QtWidgets import QFileDialog
 
 from GUI.fretboard_model import FretboardDelegate
@@ -47,12 +47,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not filename:
             return
         self.saveFretboard(filename[0])
+        print ("Survived saveFretBoard")
 
     def saveFretboard(self, fileName):
 
-        img = QImage(self.tableView.size(), QImage.Format_RGB32)
+        model = self.tableView.model()
+        topLeft = model.index(0, 0)
+        bottomRight = model.index(model.rowCount() - 1, model.columnCount() - 1)
+        rect = QRect.united(self.tableView.visualRect(topLeft), self.tableView.visualRect(bottomRight)).marginsAdded(
+            QMargins(0, 0, self.tableView.horizontalOffset(), self.tableView.verticalOffset()))
+        srcReg = QRegion(rect)
+        img = QImage(rect.size(), QImage.Format_RGB32)
         p = QPainter(img)
-        self.tableView.render(p)
+        self.tableView.render(p, sourceRegion=srcReg)
 
         if img.save(fileName):
-            print ("Saved ", fileName)
+            print("Saved ", fileName)
