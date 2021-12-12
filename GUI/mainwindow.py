@@ -28,13 +28,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.saveButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
         self.setNoteButtons()
-        self.tableView.setShowGrid(False)
-        self.tableView.setItemDelegate(FretboardDelegate(self.tableView))
+        self.fretboardView.setShowGrid(False)
+        self.fretboardView.setItemDelegate(FretboardDelegate(self.fretboardView))
 
-        hmin = self.tableView.verticalHeader().defaultSectionSize()
-        self.tableView.verticalHeader().setDefaultSectionSize(max(hmin, 45))
 
         self.saveButton.clicked.connect(self.onSaveButtonClicked)
+        hmin = self.fretboardView.verticalHeader().defaultSectionSize()
+        self.fretboardView.verticalHeader().setDefaultSectionSize(max(hmin, 45))
 
     def setNoteButtons(self):
         """
@@ -50,12 +50,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.chordsLayout.insertWidget(iafter + i, btn)
 
     def adjustSizes(self):
-        model = self.tableView.model()
+        model = self.fretboardView.model()
         w = 0
         ncol = model.columnCount()
         for i in range(ncol):
-            w = max(w, self.tableView.sizeHintForColumn(i))
-        self.tableView.horizontalHeader().setDefaultSectionSize(w)
+            w = max(w, self.fretboardView.sizeHintForColumn(i))
+        self.fretboardView.horizontalHeader().setDefaultSectionSize(w)
 
     @pyqtSlot()
     def onSaveButtonClicked(self):
@@ -65,15 +65,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.saveFretboard(filename[0])
 
     def saveFretboard(self, fileName):
-
-        model = self.tableView.model()
+        model = self.fretboardView.model()
         tmpView = QTableView()
-        tmpView.verticalHeader().setDefaultSectionSize(self.tableView.verticalHeader().defaultSectionSize())
-        tmpView.horizontalHeader().setDefaultSectionSize(self.tableView.horizontalHeader().defaultSectionSize())
+        tmpView.verticalHeader().setDefaultSectionSize(self.fretboardView.verticalHeader().defaultSectionSize())
+        tmpView.horizontalHeader().setDefaultSectionSize(self.fretboardView.horizontalHeader().defaultSectionSize())
         tmpView.setModel(model)
         tmpView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         tmpView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        tmpView.setItemDelegate(self.tableView.itemDelegate())
+        tmpView.setItemDelegate(self.fretboardView.itemDelegate())
         tmpView.setShowGrid(False)
 
         topLeftIndex = model.index(0, 0)

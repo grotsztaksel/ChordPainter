@@ -50,7 +50,7 @@ if __name__ == '__main__':
     # px = painter.pixmap
     mw = MainWindow(None)
     model = FretboardModel(mw, banjo)
-    mw.tableView.setModel(model)
+    mw.fretboardView.setModel(model)
     mw.setWindowTitle("ChordPainter")
     mw.adjustSizes()
     mw.show()
