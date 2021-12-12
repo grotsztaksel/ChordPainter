@@ -12,9 +12,9 @@ __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 import os
 
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, pyqtSlot, QRect, QMargins
+from PyQt5.QtCore import Qt, pyqtSlot, QRect, QMargins, QPoint, QObject, QEvent
 from PyQt5.QtGui import QImage, QPainter, QRegion
-from PyQt5.QtWidgets import QFileDialog, QRadioButton, QButtonGroup, QStyle, QTableView
+from PyQt5.QtWidgets import QFileDialog, QRadioButton, QButtonGroup, QStyle, QTableView, QToolButton, QSizePolicy
 
 from GUI.fretboard_model import FretboardDelegate
 from music_theory import NOTES
@@ -26,13 +26,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None, flags=Qt.WindowFlags()):
         super().__init__(parent, flags)
         self.setupUi(self)
+
+        self.saveButton = QToolButton(self)
         self.saveButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        self.saveButton.clicked.connect(self.onSaveButtonClicked)
+        self.saveButton.setMaximumSize(self.saveButton.sizeHint())
+        self.saveButton.hide()
+
         self.setNoteButtons()
         self.fretboardView.setShowGrid(False)
         self.fretboardView.setItemDelegate(FretboardDelegate(self.fretboardView))
 
+        self.fretboardView.installEventFilter(self)
 
-        self.saveButton.clicked.connect(self.onSaveButtonClicked)
         hmin = self.fretboardView.verticalHeader().defaultSectionSize()
         self.fretboardView.verticalHeader().setDefaultSectionSize(max(hmin, 45))
 
@@ -56,6 +62,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for i in range(ncol):
             w = max(w, self.fretboardView.sizeHintForColumn(i))
         self.fretboardView.horizontalHeader().setDefaultSectionSize(w)
+
+    def eventFilter(self, object: QObject, event: QEvent) -> bool:
+        """
+        Show or hide buttons over widgets
+        """
+        if object == self.fretboardView and event.type() == QEvent.Enter:
+            point = self.fretboardView.rect().bottomRight() \
+                    - QPoint(self.saveButton.width(), self.saveButton.height()) \
+                    - QPoint(20, 20)
+            self.saveButton.move(self.fretboardView.mapToParent(point))
+            self.saveButton.show()
+            return True
+        elif object == self.fretboardView and event.type() == QEvent.Leave:
+            self.saveButton.hide()
+            return True
+
+        return super().eventFilter(object, event)
 
     @pyqtSlot()
     def onSaveButtonClicked(self):
