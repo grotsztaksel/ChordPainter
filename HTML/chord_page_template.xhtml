@@ -7,18 +7,26 @@
     <title></title>
 </head>
 <body>
-<h2>{chord_formatted}</h2>
+<h2>Triady {chord_root}</h2>
 <h4>Dźwięki w akordzie: {notes_in_chord}</h4>
 <table>
     <tr>
-        <th>Gitara</th>
-        <th>Banjo</th>
-        <th>Ukulele</th>
+        <th>{chord_maj}</th>
+        <th>{chord_min}</th>
+        <th>{chord_dim}</th>
+        <th>{chord_aug}</th>
     </tr>
     <tr>
-        <td><img src="../img/Guitar_{chord}_{type}.png" alt=""/></td>
-        <td><img src="../img/Banjo_{chord}_{type}.png" alt=""/></td>
-        <td><img src="../img/Ukulele_{chord}_{type}.png" alt=""/></td>
+        <td>{notes_maj}</td>
+        <td>{notes_min}</td>
+        <td>{notes_dim}</td>
+        <td>{notes_aug}</td>
+    </tr>
+    <tr>
+        <td><img src="../img/{instrument}_{chord_maj_filename}.png" alt=""/></td>
+        <td><img src="../img/{instrument}_{chord_min_filename}.png" alt=""/></td>
+        <td><img src="../img/{instrument}_{chord_dim_filename}.png" alt=""/></td>
+        <td><img src="../img/{instrument}_{chord_aug_filename}.png" alt=""/></td>
     </tr>
 </table>
 </body>
