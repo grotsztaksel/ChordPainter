@@ -77,7 +77,10 @@ class FretboardModel(QAbstractItemModel):
         elif role == Qt.DisplayRole or role == Qt.EditRole:
             return self.instrument.getNote(self.stringFromIndex(index), index.row())
         elif role == Qt.BackgroundRole and self.data(index, Qt.DisplayRole) in self.currentChord:
-            return QBrush(Qt.black)
+            if self.data(index, Qt.DisplayRole) == self.currentChord[0]:
+                # Root note
+                return QBrush(Qt.black)
+            return QBrush(Qt.darkGray)
         elif role == Qt.ForegroundRole and self.data(index, Qt.DisplayRole) in self.currentChord:
             return QPen(Qt.white)
 
