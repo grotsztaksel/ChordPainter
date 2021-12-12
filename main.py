@@ -21,11 +21,6 @@ from Instruments.guitar import Guitar
 from Instruments.ukulele import Ukulele
 from file_register import FileRegister
 
-
-class Interval(object):
-    pass
-
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     # Using a QApplication appears to mitigate the crash that would otherwise occur upon constructing a QPixmap.
@@ -41,10 +36,8 @@ if __name__ == '__main__':
 
     # chordTypes = ChordInterval.getAllChordTypes()
 
-
     if not os.path.isdir(targetDir):
         os.makedirs(targetDir)
-
 
     # painter = FretboardPainter(size, banjo)
     # px = painter.pixmap
@@ -70,6 +63,5 @@ if __name__ == '__main__':
     #     px.save(pngName)
     #     print("Saved ", pngName)
     #     filereg.register(pngName)
-
 
     sys.exit(app.exec_())
