@@ -11,8 +11,11 @@ __date__ = '2021-12-04'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 import re
+from collections import namedtuple
 
 NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
+ChordType = namedtuple("ChordType", ["interval", "name"])
 
 
 class ChordInterval(object):
@@ -20,18 +23,18 @@ class ChordInterval(object):
     Lists of intervals that define different kinds of chords
     """
     # Triads:
-    major = (4, 3)
-    minor = (3, 4)
-    diminished = (3, 3)
-    augmented = (4, 4)
+    major = ChordType((4, 3), "major")
+    minor = ChordType((3, 4), "minor")
+    diminished = ChordType((3, 3), "diminished")
+    augmented = ChordType((4, 4), "augmented")
 
     # Seventh
-    major_7 = (4, 3, 4)
-    dominant_7 = (4, 3, 3)
-    minor_major_7 = (3, 4, 4)
-    min_7 = (3, 4, 3)
-    halfdim_7 = (3, 3, 4)
-    dim7 = (3, 3, 3)
+    major_7 = ChordType((4, 3, 4), "major 7th")
+    dominant_7 = ChordType((4, 3, 3), "dominant 7th")
+    minor_major_7 = ChordType((3, 4, 4), "minor major 7th")
+    min_7 = ChordType((3, 4, 3), "minor 7th")
+    halfdim_7 = ChordType((3, 3, 4), "half diminished 7th")
+    dim7 = ChordType((3, 3, 3), "diminished 7th")
 
     @staticmethod
     def getAllChordTypes__():
@@ -43,8 +46,8 @@ class ChordInterval(object):
             if a.startswith("__") or a.endswith("__"):
                 continue
             attr = getattr(ChordInterval, a)
-            if isinstance(attr, list):
-                chordTypes.append(a)
+            if isinstance(attr, ChordType):
+                chordTypes.append(attr)
         return chordTypes
 
 
