@@ -27,17 +27,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super().__init__(parent, flags)
         self.setupUi(self)
 
-        self.saveButton = QToolButton(self)
-        self.saveButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
-        self.saveButton.clicked.connect(self.onSaveButtonClicked)
-        self.saveButton.setMaximumSize(self.saveButton.sizeHint())
-        self.saveButton.hide()
+        self.saveFretboardButton = QToolButton(self)
+        self.saveFretboardButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        self.saveFretboardButton.clicked.connect(self.onSaveFretboardClicked)
+        self.saveFretboardButton.setMaximumSize(self.saveFretboardButton.sizeHint())
+        self.saveFretboardButton.hide()
+
+        self.saveChordButton = QToolButton(self)
+        self.saveChordButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        self.saveChordButton.clicked.connect(self.onSaveChordClicked)
+        self.saveChordButton.setMaximumSize(self.saveChordButton.sizeHint())
+        self.saveChordButton.hide()
 
         self.setNoteButtons()
         self.fretboardView.setShowGrid(False)
         self.fretboardView.setItemDelegate(FretboardDelegate(self.fretboardView))
 
         self.fretboardView.installEventFilter(self)
+        self.chordPicWidget.installEventFilter(self)
 
         hmin = self.fretboardView.verticalHeader().defaultSectionSize()
         self.fretboardView.verticalHeader().setDefaultSectionSize(max(hmin, 45))
@@ -69,23 +76,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if object == self.fretboardView and event.type() == QEvent.Enter:
             point = self.fretboardView.rect().bottomRight() \
-                    - QPoint(self.saveButton.width(), self.saveButton.height()) \
+                    - QPoint(self.saveFretboardButton.width(), self.saveFretboardButton.height()) \
                     - QPoint(20, 20)
-            self.saveButton.move(self.fretboardView.mapToParent(point))
-            self.saveButton.show()
+            self.saveFretboardButton.move(self.fretboardView.mapToParent(point))
+            self.saveFretboardButton.show()
             return True
         elif object == self.fretboardView and event.type() == QEvent.Leave:
-            self.saveButton.hide()
+            self.saveFretboardButton.hide()
+            return True
+        elif object == self.chordPicWidget and event.type() == QEvent.Enter:
+            point = self.chordPicWidget.rect().bottomRight() \
+                    - QPoint(self.saveChordButton.width(), self.saveChordButton.height()) \
+                    - QPoint(20, 20)
+            self.saveChordButton.move(self.chordPicWidget.mapTo(self, point))
+            self.saveChordButton.show()
+            return True
+        elif object == self.chordPicWidget and event.type() == QEvent.Leave:
+            self.saveChordButton.hide()
             return True
 
         return super().eventFilter(object, event)
 
     @pyqtSlot()
-    def onSaveButtonClicked(self):
+    def onSaveFretboardClicked(self):
         filename = QFileDialog.getSaveFileName(self, "Save fretboard", filter="*.png;; *.bmp;; *.jpg")
         if not filename:
             return
         self.saveFretboard(filename[0])
+
+    @pyqtSlot()
+    def onSaveChordClicked(self):
+        pass
 
     def saveFretboard(self, fileName):
         """
