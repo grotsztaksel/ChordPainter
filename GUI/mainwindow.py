@@ -14,7 +14,7 @@ import os
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot, QRect, QMargins
 from PyQt5.QtGui import QImage, QPainter, QRegion
-from PyQt5.QtWidgets import QFileDialog, QRadioButton, QButtonGroup, QStyle
+from PyQt5.QtWidgets import QFileDialog, QRadioButton, QButtonGroup, QStyle, QTableView
 
 from GUI.fretboard_model import FretboardDelegate
 from music_theory import NOTES
@@ -67,23 +67,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def saveFretboard(self, fileName):
 
         model = self.tableView.model()
+        tmpView = QTableView()
+        tmpView.verticalHeader().setDefaultSectionSize(self.tableView.verticalHeader().defaultSectionSize())
+        tmpView.horizontalHeader().setDefaultSectionSize(self.tableView.horizontalHeader().defaultSectionSize())
+        tmpView.setModel(model)
+        tmpView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        tmpView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        tmpView.setItemDelegate(self.tableView.itemDelegate())
+        tmpView.setShowGrid(False)
+
         topLeftIndex = model.index(0, 0)
         bottomRightIndex = model.index(model.rowCount() - 1, model.columnCount() - 1)
-        bottomRightRect = self.tableView.visualRect(bottomRightIndex).marginsAdded(
+        bottomRightRect = tmpView.visualRect(bottomRightIndex).marginsAdded(
             QMargins(0,
                      0,
-                     self.tableView.verticalHeader().width(),
-                     self.tableView.horizontalHeader().height()))
+                     tmpView.verticalHeader().width(),
+                     tmpView.horizontalHeader().height()))
         bottomRight = bottomRightRect.bottomRight()
-        rect = QRect(self.tableView.rect().topLeft(),
+        rect = QRect(tmpView.rect().topLeft(),
                      bottomRight)
         srcReg = QRegion(rect)
-        self.tableView.scrollTo(topLeftIndex)
+        tmpView.scrollTo(topLeftIndex)
+        tmpView.setFixedSize(rect.size())
+        tmpView.show()
         # Keep the QImage and QPainter to prevent garbage collector from destroying them and getting memory errors on
         # Qt side
         self.img = QImage(rect.size(), QImage.Format_RGB32)
         self.p = QPainter(self.img)
-        self.tableView.render(self.p, sourceRegion=srcReg)
+        tmpView.render(self.p, sourceRegion=srcReg)
 
         if self.img.save(fileName):
             print("Saved ", fileName)
+
+        tmpView.deleteLater()
