@@ -47,19 +47,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not filename:
             return
         self.saveFretboard(filename[0])
-        print ("Survived saveFretBoard")
 
     def saveFretboard(self, fileName):
 
         model = self.tableView.model()
-        topLeft = model.index(0, 0)
-        bottomRight = model.index(model.rowCount() - 1, model.columnCount() - 1)
-        rect = QRect.united(self.tableView.visualRect(topLeft), self.tableView.visualRect(bottomRight)).marginsAdded(
-            QMargins(0, 0, self.tableView.horizontalOffset(), self.tableView.verticalOffset()))
+        topLeftIndex = model.index(0, 0)
+        bottomRightIndex = model.index(model.rowCount() - 1, model.columnCount() - 1)
+        bottomRightRect = self.tableView.visualRect(bottomRightIndex).marginsAdded(
+            QMargins(0,
+                     0,
+                     self.tableView.verticalHeader().width(),
+                     self.tableView.horizontalHeader().height()))
+        bottomRight = bottomRightRect.bottomRight()
+        rect = QRect(self.tableView.rect().topLeft(),
+                     bottomRight)
         srcReg = QRegion(rect)
-        img = QImage(rect.size(), QImage.Format_RGB32)
-        p = QPainter(img)
-        self.tableView.render(p, sourceRegion=srcReg)
+        self.tableView.scrollTo(topLeftIndex)
+        # Keep the QImage and QPainter to prevent garbage collector from destroying them and getting memory errors on
+        # Qt side
+        self.img = QImage(rect.size(), QImage.Format_RGB32)
+        self.p = QPainter(self.img)
+        self.tableView.render(self.p, sourceRegion=srcReg)
 
-        if img.save(fileName):
+        if self.img.save(fileName):
             print("Saved ", fileName)
