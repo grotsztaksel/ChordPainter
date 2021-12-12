@@ -10,7 +10,6 @@ __date__ = '2021-10-12'
 
 import os
 import sys
-import typing
 
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication
@@ -20,12 +19,7 @@ from GUI.mainwindow import MainWindow
 from Instruments.banjo import Banjo_5string as Banjo
 from Instruments.guitar import Guitar
 from Instruments.ukulele import Ukulele
-from chord_inventor import ChordInventor
-from chord_painter import ChordPainter
 from file_register import FileRegister
-from fretboard_painter import FretboardPainter
-from music_theory import NOTES, ChordInterval
-from GUI.quick_preview import QuickPreview
 
 
 class Interval(object):
@@ -45,13 +39,8 @@ if __name__ == '__main__':
 
     filereg = FileRegister()
 
-    chordTypes = []
-    for a in dir(ChordInterval):
-        if a.startswith("__") and a.endswith("__"):
-            continue
-        attr = getattr(ChordInterval, a)
-        if isinstance(attr, list):
-            chordTypes.append(a)
+    # chordTypes = ChordInterval.getAllChordTypes()
+
 
     if not os.path.isdir(targetDir):
         os.makedirs(targetDir)
@@ -62,7 +51,7 @@ if __name__ == '__main__':
     mw = MainWindow(None)
     model = FretboardModel(mw, banjo)
     mw.tableView.setModel(model)
-    mw.setWindowTitle("Banjo")
+    mw.setWindowTitle("ChordPainter")
     mw.adjustSizes()
     mw.show()
     # for chord in banjo.chords:
@@ -81,5 +70,6 @@ if __name__ == '__main__':
     #     px.save(pngName)
     #     print("Saved ", pngName)
     #     filereg.register(pngName)
+
 
     sys.exit(app.exec_())
