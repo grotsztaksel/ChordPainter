@@ -167,17 +167,22 @@ class FretboardDelegate(QStyledItemDelegate):
             painter.drawLine(QPoint(c, rect.bottom()), QPoint(c, option.rect.bottom()))
 
         note = index.data(Qt.DisplayRole)
+
+        pen = index.data(Qt.ForegroundRole)
+        brush = index.data(Qt.BackgroundRole)
+
+        if pen is None:
+            pen = QPen()
+            pen.setColor(Qt.black)
+            pen.setWidth(1)
+
+        painter.setPen(pen)
+
+        if brush is None:
+            brush = QBrush(Qt.NoBrush)
+
+        painter.setBrush(brush)
+
         if note in index.model().currentChord:
-            pen = index.data(Qt.ForegroundRole)
-            brush = index.data(Qt.BackgroundRole)
-
-            if pen is not None:
-                painter.setPen(pen)
-
-            if brush is not None:
-                painter.setBrush(brush)
-
             painter.drawEllipse(rect)
-            painter.drawText(rect, Qt.AlignCenter, note)
-        else:
-            super(FretboardDelegate, self).paint(painter, option, index)
+        painter.drawText(rect, Qt.AlignCenter, note)
