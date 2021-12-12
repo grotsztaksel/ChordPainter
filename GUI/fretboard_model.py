@@ -69,7 +69,7 @@ class FretboardModel(QAbstractItemModel):
         elif fret == self.instrument.rootfrets[string] and self.editable:
             return super(FretboardModel, self).flags(index) | Qt.ItemIsEditable
         else:
-            return super(FretboardModel, self).flags(index)
+            return Qt.NoItemFlags
 
     def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> typing.Any:
         if role == Qt.TextAlignmentRole:
