@@ -88,6 +88,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.saveFretboard(filename[0])
 
     def saveFretboard(self, fileName):
+        """
+        Save the content of the fretboard view. Use a temporary widget so that it can be arbitrarily resized to
+        encompass the entire fretboard. Otherwise would not be able to render the parts that are clipped from
+        the scroll area
+        """
         model = self.fretboardView.model()
         tmpView = QTableView()
         tmpView.verticalHeader().setDefaultSectionSize(self.fretboardView.verticalHeader().defaultSectionSize())
@@ -96,7 +101,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         tmpView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         tmpView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         tmpView.setItemDelegate(self.fretboardView.itemDelegate())
-        tmpView.setShowGrid(False)
+        tmpView.setShowGrid(self.fretboardView.showGrid())
 
         topLeftIndex = model.index(0, 0)
         bottomRightIndex = model.index(model.rowCount() - 1, model.columnCount() - 1)
