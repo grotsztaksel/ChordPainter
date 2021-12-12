@@ -14,9 +14,10 @@ import os
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSlot, QRect, QMargins
 from PyQt5.QtGui import QImage, QPainter, QRegion
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QRadioButton, QButtonGroup, QStyle
 
 from GUI.fretboard_model import FretboardDelegate
+from music_theory import NOTES
 
 Ui_MainWindow, QMainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__), "mainwindow.ui"))
 
@@ -25,6 +26,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None, flags=Qt.WindowFlags()):
         super().__init__(parent, flags)
         self.setupUi(self)
+        self.saveButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        self.setNoteButtons()
         self.tableView.setShowGrid(False)
         self.tableView.setItemDelegate(FretboardDelegate(self.tableView))
 
@@ -32,6 +35,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tableView.verticalHeader().setDefaultSectionSize(max(hmin, 45))
 
         self.saveButton.clicked.connect(self.onSaveButtonClicked)
+
+    def setNoteButtons(self):
+        """
+        Set up the radiobuttons for selecting chord root notes
+        """
+        self.chordRootButtons = QButtonGroup(self)
+        iafter = 1
+        for i, note in enumerate(NOTES):
+            btn = QRadioButton(self)
+            btn.setObjectName(note)
+            btn.setText(note)
+            self.chordRootButtons.addButton(btn, i)
+            self.chordsLayout.insertWidget(iafter + i, btn)
 
     def adjustSizes(self):
         model = self.tableView.model()
