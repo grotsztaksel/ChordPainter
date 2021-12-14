@@ -12,7 +12,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QButtonGroup, QRadioButton, QGridLayout, QAbstractButton
 
-from music_theory import NOTES, ChordInterval
+from music_theory import NOTES, ChordInterval, getChordNotes
 
 Ui_ChordSelector, QWidget = uic.loadUiType(os.path.join(os.path.dirname(__file__), "chord_selector.ui"))
 
@@ -28,6 +28,7 @@ class ChordSelector(QWidget, Ui_ChordSelector):
         self.verticalLayout.insertLayout(1, self.grid)
 
         self.clearButton.clicked.connect(self.clear)
+        self.chordSelected.connect(self._updateNotes)
         self._setupRadioButtons()
 
         self._setupComboBox()
@@ -54,6 +55,19 @@ class ChordSelector(QWidget, Ui_ChordSelector):
             self.chordRootButtons.addButton(btn, i)
             row += 1
         self.chordRootButtons.buttonToggled.connect(self.onButtonToggled)
+
+    @pyqtSlot(str, str)
+    def _updateNotes(self, chordRoot, chordType):
+        """
+        Update the content of own line editor
+        """
+        intvl = ChordInterval.getInterval(chordType)
+        if intvl is None:
+            currentChord = []
+        else:
+            currentChord = getChordNotes(chordRoot, intvl)
+
+        self.chordNotesEdit.setText(', '.join(currentChord))
 
     @pyqtSlot(QAbstractButton, bool)
     def onButtonToggled(self, button, checked):
