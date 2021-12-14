@@ -71,8 +71,8 @@ def getChordNotes(root: str, chordIntervals=None):
 
     notes = [root]
 
-    for intvl in chordIntervals:
-        noteIndex += (intvl) % 12
+    for intvl in chordIntervals.interval:
+        noteIndex += intvl % 12
         notes.append(allNotes[noteIndex])
 
     return notes
