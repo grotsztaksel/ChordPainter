@@ -11,13 +11,13 @@ __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 import typing
 
-from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QSize, QRect, QPoint
+from PyQt5.QtCore import Qt, QAbstractItemModel, QModelIndex, QSize, QRect, QPoint, pyqtSlot
 from PyQt5.QtGui import QPainter, QPen, QColor, QBrush
 from PyQt5.QtWidgets import QStyledItemDelegate, QWidget, QSpinBox
 
 from Instruments.instrument import Instrument
 from chord_inventor import ChordInventor
-from music_theory import NOTES
+from music_theory import NOTES, ChordInterval, getChordNotes
 
 
 class FretboardModel(QAbstractItemModel):
@@ -84,9 +84,6 @@ class FretboardModel(QAbstractItemModel):
         elif role == Qt.ForegroundRole and self.data(index, Qt.DisplayRole) in self.currentChord:
             return QPen(Qt.white)
 
-    def stringFromIndex(self, index):
-        return len(self.instrument.strings) - index.column() - 1
-
     def setData(self, index: QModelIndex, value: typing.Any, role: int = Qt.EditRole) -> bool:
         if role != Qt.EditRole:
             return False
@@ -95,6 +92,20 @@ class FretboardModel(QAbstractItemModel):
         string = self.stringFromIndex(index)
         self.instrument.strings[string] = value
         return True
+
+    def stringFromIndex(self, index):
+        return len(self.instrument.strings) - index.column() - 1
+
+    @pyqtSlot(str, str)
+    def setCurrentChord(self, chordRoot, chordType):
+        intvl = ChordInterval.getInterval(chordType)
+        if intvl is None:
+            self.currentChord = []
+        else:
+            self.currentChord = getChordNotes(chordRoot, intvl)
+        topLeft = self.index(0, 0)
+        bottomRight = self.index(self.rowCount() - 1, self.columnCount() - 1)
+        self.dataChanged.emit(topLeft, bottomRight)
 
 
 class RootNoteSpinBox(QSpinBox):

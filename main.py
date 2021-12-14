@@ -44,6 +44,7 @@ if __name__ == '__main__':
     mw = MainWindow(None)
     model = FretboardModel(mw, banjo)
     mw.fretboardView.setModel(model)
+    mw.chordSelector.chordSelected.connect(model.setCurrentChord)
     mw.setWindowTitle("ChordPainter")
     mw.adjustSizes()
     mw.show()
