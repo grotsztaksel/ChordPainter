@@ -7,9 +7,12 @@ __authors__ = ['Piotr Gradkowski <Piotr.Gradkowski@dlr.de>']
 __date__ = '2021-12-12'
 
 import os
+import re
+import typing
 
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QValidator
 from PyQt5.QtWidgets import QButtonGroup, QRadioButton, QGridLayout, QAbstractButton
 
 from music_theory import NOTES, ChordInterval, getChordNotes
@@ -32,6 +35,7 @@ class ChordSelector(QWidget, Ui_ChordSelector):
         self._setupRadioButtons()
 
         self._setupComboBox()
+        self.chordNotesEdit.setValidator(NoteListValidator(self.chordNotesEdit))
 
     def _setupComboBox(self):
         chordTypes = [c.name for c in ChordInterval.getAllChordTypes()]
@@ -94,3 +98,34 @@ class ChordSelector(QWidget, Ui_ChordSelector):
         self.chordRootButtons.blockSignals(False)
 
         self.chordSelected.emit("", "")
+
+
+class NoteListValidator(QValidator):
+    """Validator that allows only writing notes, commas and spaces"""
+
+    # Reversed so that sharp notes can be resolved first
+    nmmmmmotere = re.compile("({})".format("|".join(reversed(NOTES))))
+    commare = re.compile(" *, *")
+
+    def validate(self, input: str, pos: int) -> typing.Tuple['QValidator.State', str, int]:
+        s = input.strip()
+        if s == "":
+            return QValidator.Acceptable, input, pos
+
+        substrings = NoteListValidator.notere.split(s)
+        noteExpected = False
+        for fragment in substrings:
+            if fragment == "":
+                continue
+            noteExpected = not noteExpected
+            if noteExpected:
+                regex = NoteListValidator.notere
+            else:
+                regex = NoteListValidator.commare
+            if not regex.fullmatch(fragment):
+                return QValidator.Invalid, input, pos
+
+        if noteExpected:
+            return QValidator.Acceptable, input, pos
+        else:
+            return QValidator.Intermediate, input, pos
