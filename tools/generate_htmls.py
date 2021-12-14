@@ -21,5 +21,5 @@ with open(template_file, 'r') as tf:
     template = tf.read()
 
 # for note in NOTES:
-#     for chordType in ChordInterval.getAllChordTypes__():
+#     for chordType in ChordInterval.getAllChordTypes():
 #

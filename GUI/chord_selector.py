@@ -33,7 +33,7 @@ class ChordSelector(QWidget, Ui_ChordSelector):
         self._setupComboBox()
 
     def _setupComboBox(self):
-        chordTypes = [c.name for c in ChordInterval.getAllChordTypes__()]
+        chordTypes = [c.name for c in ChordInterval.getAllChordTypes()]
         self.chordTypeComboBox.addItems(chordTypes)
         self.chordTypeComboBox.setCurrentIndex(chordTypes.index("major"))
         self.chordTypeComboBox.currentTextChanged.connect(self.onChordTypeSelected)

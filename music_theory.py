@@ -38,12 +38,12 @@ class ChordInterval(object):
 
     @staticmethod
     def getInterval(intvl_name):
-        for chord in ChordInterval.getAllChordTypes__():
+        for chord in ChordInterval.getAllChordTypes():
             if intvl_name == chord.name:
                 return chord
 
     @staticmethod
-    def getAllChordTypes__():
+    def getAllChordTypes():
         """
         Returns a list of all chord types that are defined in this class
         """
