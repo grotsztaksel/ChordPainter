@@ -42,27 +42,6 @@ class ChordInventor(object):
         for fret in range(0, self.instrument.nfrets - self.maxFingerStretch):
             pass
 
-    @staticmethod
-    def getChordNotes(root: str, chordIntervals=None):
-        """
-        Determine the notes in a chord. Returns a list of notes, the first note being the root note
-        """
-        assert root.upper() in NOTES
-
-        if chordIntervals is None:
-            chordIntervals = ChordInterval.major
-
-        allNotes = 3 * NOTES
-        noteIndex = allNotes.index(root.upper())
-
-        notes = [root]
-
-        for intvl in chordIntervals:
-            noteIndex += (intvl) % 12
-            notes.append(allNotes[noteIndex])
-
-        return notes
-
     def figureOutStrings(self):
         """
         Determine what notes are on which fret of each string.

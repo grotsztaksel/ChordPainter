@@ -57,6 +57,27 @@ class ChordInterval(object):
         return chordTypes
 
 
+def getChordNotes(root: str, chordIntervals=None):
+    """
+    Determine the notes in a chord. Returns a list of notes, the first note being the root note
+    """
+    assert root.upper() in NOTES
+
+    if chordIntervals is None:
+        chordIntervals = ChordInterval.major
+
+    allNotes = 3 * NOTES
+    noteIndex = allNotes.index(root.upper())
+
+    notes = [root]
+
+    for intvl in chordIntervals:
+        noteIndex += (intvl) % 12
+        notes.append(allNotes[noteIndex])
+
+    return notes
+
+
 CHORD_SUFFIXES = r"(\+|0|6|6\/9|7|7b5|7sus4|9|sus2|sus4|add9)?"
 CHORD_ENGLISH = re.compile(r"[A-G]#?m?" + CHORD_SUFFIXES)
 CHORD_GERMAN = re.compile(r"([AaEe]s?|[CDcdF-hf-h](is)?)" + CHORD_SUFFIXES)
