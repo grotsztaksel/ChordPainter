@@ -104,7 +104,7 @@ class NoteListValidator(QValidator):
     """Validator that allows only writing notes, commas and spaces"""
 
     # Reversed so that sharp notes can be resolved first
-    nmmmmmotere = re.compile("({})".format("|".join(reversed(NOTES))))
+    notere = re.compile("({})".format("|".join(reversed(NOTES))))
     commare = re.compile(" *, *")
 
     def validate(self, input: str, pos: int) -> typing.Tuple['QValidator.State', str, int]:
