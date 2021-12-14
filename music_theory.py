@@ -37,6 +37,12 @@ class ChordInterval(object):
     dim7 = ChordType((3, 3, 3), "diminished 7th")
 
     @staticmethod
+    def getInterval(intvl_name):
+        for chord in ChordInterval.getAllChordTypes__():
+            if intvl_name == chord.name:
+                return chord
+
+    @staticmethod
     def getAllChordTypes__():
         """
         Returns a list of all chord types that are defined in this class
