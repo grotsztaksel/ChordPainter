@@ -95,6 +95,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot(str)
     def addInstrument(self, instr):
         """Add a new instrument definition to the database"""
+        newInstr = json.loads(instr)
+        self.jdata["instrument"].append(newInstr)
+        self.instrumentComboBox.addItem(newInstr["name"])
+        self.instrumentComboBox.setCurrentIndex(self.instrumentComboBox.count() - 1)
 
     @pyqtSlot()
     def onNewInstrumentClicked(self):
