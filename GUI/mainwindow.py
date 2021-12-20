@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import QFileDialog, QStyle, QTableView, QToolButton
 import Instruments
 from GUI.define_instrument_dialog import DefineInstrumentDialog
 from GUI.fretboard_model import FretboardDelegate, FretboardModel
+from GUI.note_line_edit import NoteLineEdit
 from Instruments.instrument import Instrument
 
 Ui_MainWindow, QMainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__), "mainwindow.ui"))
@@ -60,6 +61,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.onInstrumentSelected(self.instrumentComboBox.currentIndex())
         self.adjustSizes()
+
+        notesEditor = NoteLineEdit()
+        self.tuningComboBox.setLineEdit(notesEditor)
 
     def _readData(self):
         jfile = os.path.join(os.path.dirname(Instruments.instrument.__file__), "instruments.json")
