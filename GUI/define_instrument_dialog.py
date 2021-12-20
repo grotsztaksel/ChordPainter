@@ -10,8 +10,10 @@ import json
 import os
 
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QDialogButtonBox
 
+from .note_list_validator import NoteListValidator
 from music_theory import notesFromString
 
 Ui_DefineInstrumentDialog, QDialog = uic.loadUiType(
@@ -24,6 +26,26 @@ class DefineInstrumentDialog(QDialog, Ui_DefineInstrumentDialog):
     def __init__(self, parent=None, flags=Qt.WindowFlags()):
         super().__init__(parent, flags)
         self.setupUi(self)
+        self.tuningLineEdit.setValidator(NoteListValidator(self.tuningLineEdit))
+        self.tuningLineEdit.textChanged.connect(self._updateStringCounter)
+        self.tuningLineEdit.textChanged.connect(self.updateOKbutton)
+        self.instrumentName.textChanged.connect(self.updateOKbutton)
+
+        self.updateOKbutton()
+
+    @pyqtSlot()
+    def updateOKbutton(self):
+        """Update the enabling state of the OK button, depending on whether the new instrument can or cannot be saved"""
+        button = self.buttonBox.button(QDialogButtonBox.Ok)
+
+        if not self.instrumentName.text():
+            button.setEnabled(False)
+            return
+        if not notesFromString(self.tuningLineEdit.text()):
+            button.setEnabled(False)
+            return
+
+        button.setEnabled(True)
 
     def accept(self):
         newInstrument = {
@@ -39,3 +61,12 @@ class DefineInstrumentDialog(QDialog, Ui_DefineInstrumentDialog):
                 pass
 
         self.emitInstrumentDefinition.emit(json.dumps(newInstrument))
+
+    @pyqtSlot(str)
+    def _updateStringCounter(self, text):
+        l = len(notesFromString(text))
+        if l == 1:
+            s = ""
+        else:
+            s = "s"
+        self.nstrings.setText(f"{str(l)} string{s}")
