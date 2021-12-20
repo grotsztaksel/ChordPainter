@@ -12,7 +12,6 @@ from PyQt5 import uic
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QButtonGroup, QRadioButton, QGridLayout, QAbstractButton
 
-from .note_list_validator import NoteListValidator
 from music_theory import NOTES, ChordInterval, getChordNotes
 
 Ui_ChordSelector, QWidget = uic.loadUiType(os.path.join(os.path.dirname(__file__), "chord_selector.ui"))
@@ -33,7 +32,6 @@ class ChordSelector(QWidget, Ui_ChordSelector):
         self._setupRadioButtons()
 
         self._setupComboBox()
-        self.chordNotesEdit.setValidator(NoteListValidator(self.chordNotesEdit))
 
     def _setupComboBox(self):
         chordTypes = [c.name for c in ChordInterval.getAllChordTypes()]
@@ -103,3 +101,4 @@ class ChordSelector(QWidget, Ui_ChordSelector):
         self.chordRootButtons.blockSignals(False)
 
         self.chordSelected.emit("", "")
+

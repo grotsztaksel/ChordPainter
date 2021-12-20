@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>234</width>
-    <height>154</height>
+    <height>158</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -60,10 +60,17 @@
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="chordNotesEdit"/>
+    <widget class="NoteLineEdit" name="chordNotesEdit"/>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>NoteLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>GUI/note_line_edit</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
