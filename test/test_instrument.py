@@ -27,6 +27,21 @@ class TestInstrument(unittest.TestCase):
         self.assertEqual("F", instrument.getNote(0, 15))
         self.assertIsNone(instrument.getNote(4, 2))
 
+    def test_fromData(self):
+        data = {
+                   "name": "Guitar",
+                   "strings": "EBGDAE",
+                   "tuning": [{"name": "Drop D", "strings": "EBGDAD"},
+                              {"name": "Open D", "strings": "DADF#AD"}],
+                   "nfrets": 20,
+                   "dotsOnFrets": [3, 5, 7, 9, 12, 15, 17]
+               }
+        i = Instrument.fromData(data)
+        self.assertEqual("Guitar", i.name)
+        self.assertEqual(["E", "B", "G", "D", "A", "E"], i.strings)
+        self.assertEqual(20, i.nfrets)
+        self.assertEqual([3, 5, 7, 9, 12, 15, 17], i.dotsOnFrets)
+
 
 if __name__ == '__main__':
     unittest.main()

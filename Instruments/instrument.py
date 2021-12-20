@@ -11,7 +11,7 @@ __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 import warnings
 from chord import Chord
-from music_theory import NOTES
+from music_theory import NOTES, notesFromString
 
 
 class Instrument(object):
@@ -83,6 +83,23 @@ class Instrument(object):
         ibase = NOTES.index(root)
 
         return NOTES[(ibase - self.rootfrets[string] + fret) % 12]
+
+    @staticmethod
+    def fromData(d):
+        """Instantiates and returns a new Instrument object basing on the data provided"""
+        instrument = Instrument()
+        instrument.name = d["name"]
+        instrument.strings = notesFromString(d["strings"])
+        instrument.nfrets = d["nfrets"]
+        instrument.dotsOnFrets = d["dotsOnFrets"]
+        if "rootfrets" in d:
+            instrument.rootfrets = d["rootfrets"]
+        else:
+            instrument.rootfrets = [0] * len(instrument.strings)
+
+        # ToDo: restore chords saved in the data
+
+        return instrument
 
 
 def old2new(old):
