@@ -29,6 +29,7 @@ class Instrument(object):
         # (the thinnest in guitar)
         self.nfrets = 0  # number of frets
         self.chords = list()
+        self.tuning = [("Standard", self.strings)]
 
         # Numbers of frets on which each string begins. Usually is all zeros, but for bluegrass banjo
         # the 5th string will have value 5
@@ -100,6 +101,15 @@ class Instrument(object):
             instrument.rootfrets = d["rootfrets"]
         else:
             instrument.rootfrets = [0] * len(instrument.strings)
+
+        instrument.tuning = [("Standard", instrument.strings)]
+
+        if "tuning" in d:
+            for t in d["tuning"]:
+                if "name" in t:
+                    name = t["name"]
+                else:
+                    name = t["strings"]
 
         # ToDo: restore chords saved in the data
 
