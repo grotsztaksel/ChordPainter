@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_4">
+   <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,0">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
@@ -28,78 +28,33 @@
         <property name="midLineWidth">
          <number>0</number>
         </property>
-        <layout class="QFormLayout" name="formLayout">
-         <item row="0" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>Instrument</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label">
+         <item>
+          <widget class="QComboBox" name="instrumentComboBox"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_3">
            <property name="text">
             <string>Tuning</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_4">
+         <item>
+          <widget class="QComboBox" name="tuningComboBox"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="newInstrumentButton">
            <property name="text">
-            <string>Number of strings</string>
+            <string>New...</string>
            </property>
           </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QSpinBox" name="nstringsSpinBox"/>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Number of frets</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QSpinBox" name="nfretsSpinBox"/>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Dots on frets</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QLineEdit" name="dotsOnFretsEditor"/>
-         </item>
-         <item row="1" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QComboBox" name="tuningComboBox"/>
-           </item>
-           <item>
-            <widget class="QToolButton" name="tuningSaveButton">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="0" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
-           <item>
-            <widget class="QComboBox" name="instrumentComboBox"/>
-           </item>
-           <item>
-            <widget class="QToolButton" name="instrumentSaveButton">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </item>
         </layout>
        </widget>
@@ -120,7 +75,7 @@
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="ChordSelector" name="chordSelector" />
+          <widget class="ChordSelector" name="chordSelector" native="true"/>
          </item>
         </layout>
        </widget>

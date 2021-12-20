@@ -18,6 +18,7 @@ from PyQt5.QtGui import QImage, QPainter, QRegion
 from PyQt5.QtWidgets import QFileDialog, QStyle, QTableView, QToolButton
 
 import Instruments
+from GUI.define_instrument_dialog import DefineInstrumentDialog
 from GUI.fretboard_model import FretboardDelegate, FretboardModel
 from Instruments.instrument import Instrument
 
@@ -29,8 +30,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super().__init__(parent, flags)
         self.setupUi(self)
 
-        self.instrumentSaveButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
-        self.tuningSaveButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        self.newInstrumentButton.clicked.connect(self.onNewInstrumentClicked)
 
         self.saveFretboardButton = QToolButton(self)
         self.saveFretboardButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
@@ -89,6 +89,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         newModel = FretboardModel(self, newInstrument)
         self.setModel(newModel)
 
+    @pyqtSlot(str)
+    def addInstrument(self, instr):
+        """Add a new instrument definition to the database"""
+
+    @pyqtSlot()
+    def onNewInstrumentClicked(self):
+        """Show dialog to define a new instrument"""
+        dialog = DefineInstrumentDialog(self)
+        dialog.emitInstrumentDefinition.connect(self.addInstrument)
+        dialog.exec()
+
     def adjustSizes(self):
         model = self.fretboardView.model()
         w = 0
@@ -96,6 +107,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for i in range(ncol):
             w = max(w, self.fretboardView.sizeHintForColumn(i))
         self.fretboardView.horizontalHeader().setDefaultSectionSize(w)
+        self.fretboardView.setMinimumWidth(self.fretboardView.sizeHint().width())
 
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
         """
