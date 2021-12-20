@@ -15,6 +15,10 @@ from collections import namedtuple
 
 NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
+# Regular expression useful for finding notes in a string. Uses reversed(NOTES) so that sharp notes can be resolved
+# first
+NOTEre = re.compile("({})".format("|".join(reversed(NOTES))))
+
 ChordType = namedtuple("ChordType", ["interval", "name"])
 
 
@@ -55,6 +59,17 @@ class ChordInterval(object):
             if isinstance(attr, ChordType):
                 chordTypes.append(attr)
         return chordTypes
+
+
+def notesFromString(s):
+    """
+    Extract the valid note names from the input list and returns a list of notes.
+    """
+    notes = []
+    for substr in NOTEre.split(s):
+        if substr in NOTES:
+            notes.append(substr)
+    return notes
 
 
 def getChordNotes(root: str, chordIntervals=None):

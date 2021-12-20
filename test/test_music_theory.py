@@ -8,7 +8,7 @@ __date__ = '2021-12-14'
 
 import unittest
 
-from music_theory import ChordInterval, getChordNotes, NOTES, ChordType
+from music_theory import ChordInterval, getChordNotes, NOTES, ChordType, notesFromString
 
 
 class TestChordInterval(unittest.TestCase):
@@ -43,6 +43,10 @@ class TestChordInterval(unittest.TestCase):
 class TestMusicTheory(unittest.TestCase):
     def test_NOTES(self):
         self.assertEqual(12, len(NOTES))
+
+    def test_notesFromString(self):
+        self.assertEqual(['E', 'G#', 'B'], notesFromString("EG#B"))
+        self.assertEqual(['B', 'D#', 'F#'], notesFromString("B, D# F#"))
 
     def test_getChordNotes(self):
         self.assertEqual(['E', 'G#', 'B'], getChordNotes("E", ChordInterval.major))

@@ -15,7 +15,7 @@ from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QValidator
 from PyQt5.QtWidgets import QButtonGroup, QRadioButton, QGridLayout, QAbstractButton
 
-from music_theory import NOTES, ChordInterval, getChordNotes
+from music_theory import NOTES, ChordInterval, getChordNotes, NOTEre
 
 Ui_ChordSelector, QWidget = uic.loadUiType(os.path.join(os.path.dirname(__file__), "chord_selector.ui"))
 
@@ -103,23 +103,21 @@ class ChordSelector(QWidget, Ui_ChordSelector):
 class NoteListValidator(QValidator):
     """Validator that allows only writing notes, commas and spaces"""
 
-    # Reversed so that sharp notes can be resolved first
-    notere = re.compile("({})".format("|".join(reversed(NOTES))))
-    commare = re.compile(" *, *")
+    commare = re.compile(" *, *")  # Regex for commas and separators in the string
 
     def validate(self, input: str, pos: int) -> typing.Tuple['QValidator.State', str, int]:
         s = input.strip()
         if s == "":
             return QValidator.Acceptable, input, pos
 
-        substrings = NoteListValidator.notere.split(s)
+        substrings = NOTEre.split(s)
         noteExpected = False
         for fragment in substrings:
             if fragment == "":
                 continue
             noteExpected = not noteExpected
             if noteExpected:
-                regex = NoteListValidator.notere
+                regex = NOTEre
             else:
                 regex = NoteListValidator.commare
             if not regex.fullmatch(fragment):
