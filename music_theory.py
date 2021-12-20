@@ -17,7 +17,7 @@ NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 # Regular expression useful for finding notes in a string. Uses reversed(NOTES) so that sharp notes can be resolved
 # first
-NOTEre = re.compile("({})".format("|".join(reversed(NOTES))))
+NOTEre = re.compile("({})".format("|".join(reversed(NOTES))), re.IGNORECASE)
 
 ChordType = namedtuple("ChordType", ["interval", "name"])
 

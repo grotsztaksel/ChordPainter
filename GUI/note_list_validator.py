@@ -40,6 +40,6 @@ class NoteListValidator(QValidator):
                 return QValidator.Invalid, input, pos
 
         if noteExpected:
-            return QValidator.Acceptable, input, pos
+            return QValidator.Acceptable, input.upper(), pos
         else:
-            return QValidator.Intermediate, input, pos
+            return QValidator.Intermediate, input.upper(), pos
