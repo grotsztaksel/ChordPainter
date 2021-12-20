@@ -88,6 +88,13 @@ class ChordSelector(QWidget, Ui_ChordSelector):
 
         self.chordSelected.emit(btn.text(), chordType)
 
+    def emitChord(self):
+        btn = self.chordRootButtons.checkedButton()
+        if btn is None:
+            return
+        chordType = self.chordTypeComboBox.currentText()
+        self.chordSelected.emit(btn.text(), chordType)
+
     @pyqtSlot()
     def clear(self):
         self.chordRootButtons.blockSignals(True)
@@ -96,4 +103,3 @@ class ChordSelector(QWidget, Ui_ChordSelector):
         self.chordRootButtons.blockSignals(False)
 
         self.chordSelected.emit("", "")
-

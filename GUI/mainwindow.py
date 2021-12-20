@@ -74,6 +74,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fretboardView.setModel(model)
         self.chordSelector.chordSelected.connect(model.setCurrentChord)
 
+        # Show the same chord on the new instrument
+        self.chordSelector.emitChord()
+
     def getInstrumentList(self):
         """
         Return a list of names of instruments defined in the data
