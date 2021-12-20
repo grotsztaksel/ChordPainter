@@ -26,6 +26,7 @@ class TestNoteListValidator(unittest.TestCase):
         self.assertEqual((QValidator.Acceptable, "A,C", 3), self.validator.validate("A,C", 3))
         self.assertEqual((QValidator.Acceptable, "A, C#", 1), self.validator.validate("A, C#", 1))
         self.assertEqual((QValidator.Acceptable, "A , C#", -1), self.validator.validate("A , C#", -1))
+        self.assertEqual((QValidator.Acceptable, "AC#D", -1), self.validator.validate("AC#D", -1))
 
         self.assertEqual((QValidator.Intermediate, "A , C#,", 2), self.validator.validate("A , C#,", 2))
         self.assertEqual((QValidator.Intermediate, "A , C# ,  C, ", 54), self.validator.validate("A , C# ,  C, ", 54))

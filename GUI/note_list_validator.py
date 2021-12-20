@@ -2,8 +2,6 @@
 # -*- encoding: utf-8 -*-
 
 
-
-
 __all__ = ['NoteListValidator']
 __authors__ = ['Piotr Gradkowski <Piotr.Gradkowski@dlr.de>']
 __date__ = '2021-12-20'
@@ -13,7 +11,7 @@ import typing
 
 from PyQt5.QtGui import QValidator
 
-from music_theory import NOTEre
+from music_theory import NOTEre, notesFromString
 
 
 class NoteListValidator(QValidator):
@@ -27,19 +25,19 @@ class NoteListValidator(QValidator):
             return QValidator.Acceptable, input, pos
 
         substrings = NOTEre.split(s)
-        noteExpected = False
+        previousWasNote = False
         for fragment in substrings:
             if fragment == "":
                 continue
-            noteExpected = not noteExpected
-            if noteExpected:
-                regex = NOTEre
+            if NOTEre.fullmatch(fragment):
+                previousWasNote = True
+                continue
+            elif previousWasNote and NoteListValidator.commare.fullmatch(fragment):
+                previousWasNote = False
             else:
-                regex = NoteListValidator.commare
-            if not regex.fullmatch(fragment):
                 return QValidator.Invalid, input, pos
 
-        if noteExpected:
+        if previousWasNote:
             return QValidator.Acceptable, input.upper(), pos
         else:
             return QValidator.Intermediate, input.upper(), pos
