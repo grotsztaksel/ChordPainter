@@ -1,0 +1,64 @@
+{
+  "instrument": [
+    {
+      "name": "Guitar",
+      "strings": "EBGDAE",
+      "tuning": [
+        {
+          "name": "Drop D",
+          "strings": "EBGDAD"
+        },
+        {"name": "Open D",
+          "strings": "DADF#AD"}
+      ],
+      "nfrets": 20,
+      "dotsOnFrets": [
+        3,
+        5,
+        7,
+        9,
+        12,
+        15,
+        17
+      ]
+    },
+    {
+      "name": "Bluegrass banjo",
+      "strings": "DBGDG",
+      "tuning": [
+        {
+          "name": "Double C",
+          "strings": "DCGCG"
+        }
+      ],
+      "nfrets": 22,
+      "dotsOnFrets": [
+        3,
+        5,
+        7,
+        10,
+        12,
+        15,
+        17
+      ],
+      "rootfrets": [
+        0,
+        0,
+        0,
+        0,
+        5
+      ]
+    },
+    {
+      "name": "Ukulele",
+      "strings": "AECG",
+      "nfrets": 12,
+      "dotsOnFrets": [
+        3,
+        5,
+        7,
+        10
+      ]
+    }
+  ]
+}

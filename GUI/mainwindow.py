@@ -9,6 +9,7 @@ __all__ = ['MainWindow']
 __date__ = '2021-12-05'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
+import json
 import os
 
 from PyQt5 import uic
@@ -16,7 +17,9 @@ from PyQt5.QtCore import Qt, pyqtSlot, QRect, QMargins, QPoint, QObject, QEvent
 from PyQt5.QtGui import QImage, QPainter, QRegion
 from PyQt5.QtWidgets import QFileDialog, QStyle, QTableView, QToolButton
 
-from GUI.fretboard_model import FretboardDelegate
+import Instruments
+from GUI.fretboard_model import FretboardDelegate, FretboardModel
+from Instruments.instrument import Instrument
 
 Ui_MainWindow, QMainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__), "mainwindow.ui"))
 
@@ -49,6 +52,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         hmin = self.fretboardView.verticalHeader().defaultSectionSize()
         self.fretboardView.verticalHeader().setDefaultSectionSize(max(hmin, 45))
+        self.jdata = None
+        self._readData()
+
+        self.instrumentComboBox.addItems(self.getInstrumentList())
+        self.instrumentComboBox.currentIndexChanged.connect(self.onInstrumentSelected)
+
+        self.onInstrumentSelected(self.instrumentComboBox.currentIndex())
+        self.adjustSizes()
+
+    def _readData(self):
+        jfile = os.path.join(os.path.dirname(Instruments.instrument.__file__), "instruments.json")
+        with open(jfile, 'r') as f:
+            data = f.read()
+        self.jdata = json.loads(data)
+
+    def setModel(self, model):
+        if self.fretboardView.model() is not None:
+            self.chordSelector.disconnect()
+            self.fretboardView.model().deleteLater()
+        self.fretboardView.setModel(model)
+        self.chordSelector.chordSelected.connect(model.setCurrentChord)
+
+    def getInstrumentList(self):
+        """
+        Return a list of names of instruments defined in the data
+        """
+        if self.jdata is None:
+            return []
+
+        return [instr["name"] for instr in self.jdata["instrument"]]
+
+    @pyqtSlot(int)
+    def onInstrumentSelected(self, i):
+        newInstrument = Instrument.fromData(self.jdata["instrument"][i])
+        newModel = FretboardModel(self, newInstrument)
+        self.setModel(newModel)
 
     def adjustSizes(self):
         model = self.fretboardView.model()

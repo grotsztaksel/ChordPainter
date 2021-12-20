@@ -39,14 +39,8 @@ if __name__ == '__main__':
     if not os.path.isdir(targetDir):
         os.makedirs(targetDir)
 
-    # painter = FretboardPainter(size, banjo)
-    # px = painter.pixmap
     mw = MainWindow(None)
-    model = FretboardModel(mw, banjo)
-    mw.fretboardView.setModel(model)
-    mw.chordSelector.chordSelected.connect(model.setCurrentChord)
     mw.setWindowTitle("ChordPainter")
-    mw.adjustSizes()
     mw.show()
     # for chord in banjo.chords:
     #     painter = ChordPainter(chord, size, banjo)
