@@ -61,6 +61,7 @@ class DefineInstrumentDialog(QDialog, Ui_DefineInstrumentDialog):
                 pass
 
         self.emitInstrumentDefinition.emit(json.dumps(newInstrument))
+        super().accept()
 
     @pyqtSlot(str)
     def _updateStringCounter(self, text):
