@@ -9,10 +9,10 @@ __date__ = '2021-12-12'
 import os
 
 from PyQt5 import uic
-from PyQt5.QtCore import pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QButtonGroup, QRadioButton, QGridLayout, QAbstractButton
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtWidgets import QButtonGroup, QRadioButton, QGridLayout, QAbstractButton, QWidget
 
-from music_theory import NOTES, ChordInterval, getChordNotes
+from music_theory import NOTES, ChordInterval, getChordNotes, notesFromString
 
 Ui_ChordSelector, QWidget = uic.loadUiType(os.path.join(os.path.dirname(__file__), "chord_selector.ui"))
 
@@ -20,8 +20,8 @@ Ui_ChordSelector, QWidget = uic.loadUiType(os.path.join(os.path.dirname(__file__
 class ChordSelector(QWidget, Ui_ChordSelector):
     chordSelected = pyqtSignal(str, str)
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, flags=Qt.WindowFlags()):
+        super().__init__(parent, flags)
         self.setupUi(self)
         self.chordRootButtons = QButtonGroup(self)
         self.grid = QGridLayout(self)
@@ -32,6 +32,8 @@ class ChordSelector(QWidget, Ui_ChordSelector):
         self._setupRadioButtons()
 
         self._setupComboBox()
+
+        self.chordNotesEdit.editingFinished.connect(self.updateChordFromText)
 
     def _setupComboBox(self):
         chordTypes = [c.name for c in ChordInterval.getAllChordTypes()]
@@ -69,6 +71,24 @@ class ChordSelector(QWidget, Ui_ChordSelector):
 
         self.chordNotesEdit.setText(', '.join(currentChord))
 
+    @pyqtSlot()
+    def updateChordFromText(self):
+        """
+        When the line editor content was edited manually, try recognizing the chord and adjusting the widget's state
+        """
+        notes = set(notesFromString(self.chordNotesEdit.text()))
+        for ctype in ChordInterval.getAllChordTypes():
+            for note in NOTES:
+                chord = set(getChordNotes(note, ctype))
+                if chord == notes:
+                    self.setChord(note, ctype)
+                    return
+
+        # Nothing was found. Uncheck all buttons
+        self.blockSignals(True)
+        self.clear()
+        self.blockSignals(False)
+
     @pyqtSlot(QAbstractButton, bool)
     def onButtonToggled(self, button, checked):
         if not checked:
@@ -96,9 +116,14 @@ class ChordSelector(QWidget, Ui_ChordSelector):
     @pyqtSlot()
     def clear(self):
         self.chordRootButtons.blockSignals(True)
+        self.chordRootButtons.setExclusive(False)
         for button in self.chordRootButtons.buttons():
             button.setChecked(False)
+        self.chordRootButtons.setExclusive(True)
         self.chordRootButtons.blockSignals(False)
 
         self.chordSelected.emit("", "")
 
+    def setChord(self, root, ctype):
+        self.chordRootButtons.button(NOTES.index(root)).setChecked(True)
+        self.chordTypeComboBox.setCurrentText(ctype.name)
