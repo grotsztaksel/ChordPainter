@@ -89,9 +89,13 @@ class Instrument(object):
         """Instantiates and returns a new Instrument object basing on the data provided"""
         instrument = Instrument()
         instrument.name = d["name"]
-        instrument.strings = notesFromString(d["strings"])
+        if type(d["strings"]) is list:
+            instrument.strings = notesFromString(", ".join(d["strings"]))
+        else:
+            instrument.strings = notesFromString(d["strings"])
         instrument.nfrets = d["nfrets"]
-        instrument.dotsOnFrets = d["dotsOnFrets"]
+        if "dotsOnFrets" in d:
+            instrument.dotsOnFrets = d["dotsOnFrets"]
         if "rootfrets" in d:
             instrument.rootfrets = d["rootfrets"]
         else:
