@@ -31,7 +31,6 @@ class ChordInventor(object):
     def setInstrument(self, instrument):
         """Set the notes on the open strings"""
         assert isinstance(instrument, Instrument)
-        assert type(instrument) is not Instrument
         self.instrument = instrument
         self.figureOutStrings()
 
