@@ -42,6 +42,8 @@ class TestInstrument(unittest.TestCase):
         self.assertEqual(20, i.nfrets)
         self.assertEqual([3, 5, 7, 9, 12, 15, 17], i.dotsOnFrets)
 
+        self.assertEqual(["E", "B", "G", "D", "A", "E"], i.tuning[0][1])
+
 
 if __name__ == '__main__':
     unittest.main()
