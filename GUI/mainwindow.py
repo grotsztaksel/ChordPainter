@@ -53,6 +53,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         hmin = self.fretboardView.verticalHeader().defaultSectionSize()
         self.fretboardView.verticalHeader().setDefaultSectionSize(max(hmin, 45))
         self.jdata = None
+        self.jfile = os.path.join(os.path.dirname(Instruments.instrument.__file__), "instruments.json")
         self._readData()
 
         self.instrumentComboBox.addItems(self.getInstrumentList())
@@ -70,12 +71,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tuningNameEditor.returnPressed.connect(self.saveTuning)
         self.tuningNameEditor.editingFinished.connect(lambda: self.tuningNameEditor.hide())
 
+        self.saveAllButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
+        self.saveAllButton.clicked.connect(self._saveData)
         self.onInstrumentSelected(self.instrumentComboBox.currentIndex())
         self.adjustSizes()
 
     def _readData(self):
-        jfile = os.path.join(os.path.dirname(Instruments.instrument.__file__), "instruments.json")
-        with open(jfile, 'r') as f:
+
+        with open(self.jfile, 'r') as f:
             data = f.read()
         self.jdata = json.loads(data)
 
@@ -90,6 +93,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Show the same chord on the new instrument
         self.chordSelector.emitChord()
+
+    def _saveData(self):
+        """
+        Save all instruments to a JSON file
+        """
+        i = self.instrumentComboBox.currentIndex()
+        instr = self.model.instrument
+        if len(self.jdata["instrument"]) > i:
+            jinstr = self.jdata["instrument"][i]
+        else:
+            self.jdata["instrument"].append({})
+            jinstr = self.jdata["instrument"][-1]
+        jinstr["name"] = instr.name
+        jinstr["strings"] = "".join(instr.tuning[0][1])
+        jinstr["nfrets"] = instr.nfrets
+        jinstr["dotsOnFrets"] = instr.dotsOnFrets
+        if any(instr.rootfrets):
+            jinstr["rootfrets"] = instr.rootfrets
+
+        if len(instr.tuning) > 1:
+            l = []
+            jinstr["tuning"] = l
+            for t in instr.tuning[1:]:
+                name = t[0]
+                strings = t[1]
+                d = {"strings": "".join(strings)}
+                if name is not None:
+                    d["name"] = name
+                l.append(d)
+
+        with open(self.jfile, 'w') as f:
+            f.write(json.dumps(self.jdata, indent=2))
+
 
     def getInstrumentList(self):
         """
