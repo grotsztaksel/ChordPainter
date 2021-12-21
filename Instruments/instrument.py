@@ -104,12 +104,21 @@ class Instrument(object):
 
         instrument.tuning = [("Standard", instrument.strings)]
 
+        invalid = []
         if "tuning" in d:
-            for t in d["tuning"]:
+            for i, t in enumerate(d["tuning"]):
+                s = notesFromString(t["strings"])
+                if len(s) != len(instrument.strings):
+                    # Ignore this one
+                    invalid.append(i)
+                    continue
                 if "name" in t:
                     name = t["name"]
                 else:
-                    name = t["strings"]
+                    name = ", ".join(s)
+                instrument.tuning.append((name, s))
+            for inv in reversed(invalid):
+                d["tuning"].pop(inv)
 
         # ToDo: restore chords saved in the data
 
