@@ -135,6 +135,7 @@ class RootNoteSpinBox(QSpinBox):
 class FretboardDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.hovered = QModelIndex()
 
         self.fretPen = QPen()
         self.fretPen.setStyle(Qt.SolidLine)
@@ -148,6 +149,10 @@ class FretboardDelegate(QStyledItemDelegate):
         self.stringPen.setColor(Qt.black)
         self.stringPen.setWidth(1)
         self.stringPen.setStyle(Qt.SolidLine)
+
+    @pyqtSlot(QModelIndex)
+    def hoverOver(self, index):
+        self.hovered = index
 
     def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QModelIndex) -> QWidget:
         return RootNoteSpinBox(parent)

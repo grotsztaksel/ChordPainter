@@ -14,13 +14,12 @@ import os
 from copy import copy
 
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, pyqtSlot, QRect, QMargins, QPoint, QObject, QEvent, QModelIndex
-from PyQt5.QtGui import QImage, QPainter, QRegion
-from PyQt5.QtWidgets import QFileDialog, QStyle, QTableView, QToolButton, QLineEdit
+from PyQt5.QtCore import Qt, pyqtSlot, QRect, QPoint, QObject, QEvent, QModelIndex
+from PyQt5.QtWidgets import QStyle, QToolButton, QLineEdit
 
 import Instruments
 from GUI.define_instrument_dialog import DefineInstrumentDialog
-from GUI.fretboard_model import FretboardDelegate, FretboardModel
+from GUI.fretboard_model import FretboardModel
 from Instruments.instrument import Instrument
 
 Ui_MainWindow, QMainWindow = uic.loadUiType(os.path.join(os.path.dirname(__file__), "mainwindow.ui"))
@@ -32,26 +31,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.model = None
 
-        self.saveFretboardButton = QToolButton(self)
-        self.saveFretboardButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
-        self.saveFretboardButton.clicked.connect(self.onSaveFretboardClicked)
-        self.saveFretboardButton.setMaximumSize(self.saveFretboardButton.sizeHint())
-        self.saveFretboardButton.hide()
-
         self.saveChordButton = QToolButton(self)
         self.saveChordButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
         self.saveChordButton.clicked.connect(self.onSaveChordClicked)
         self.saveChordButton.setMaximumSize(self.saveChordButton.sizeHint())
         self.saveChordButton.hide()
 
-        self.fretboardView.setShowGrid(False)
-        self.fretboardView.setItemDelegate(FretboardDelegate(self.fretboardView))
-
-        self.fretboardView.installEventFilter(self)
         self.chordPicWidget.installEventFilter(self)
 
-        hmin = self.fretboardView.verticalHeader().defaultSectionSize()
-        self.fretboardView.verticalHeader().setDefaultSectionSize(max(hmin, 45))
         self.jdata = None
         self.jfile = os.path.join(os.path.dirname(Instruments.instrument.__file__), "instruments.json")
         self._readData()
@@ -74,7 +61,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.saveAllButton.setIcon(self.style().standardIcon(QStyle.SP_DialogSaveButton))
         self.saveAllButton.clicked.connect(self._saveData)
         self.onInstrumentSelected(self.instrumentComboBox.currentIndex())
-        self.adjustSizes()
+        self.fretboardView.adjustSizes()
 
     def _readData(self):
 
@@ -124,7 +111,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         with open(self.jfile, 'w') as f:
             f.write(json.dumps(self.jdata, indent=2))
-
 
     def getInstrumentList(self):
         """
@@ -227,30 +213,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dialog.emitInstrumentDefinition.connect(self.addInstrument)
         dialog.exec()
 
-    def adjustSizes(self):
-        model = self.model
-        w = 0
-        ncol = model.columnCount()
-        for i in range(ncol):
-            w = max(w, self.fretboardView.sizeHintForColumn(i))
-        self.fretboardView.horizontalHeader().setDefaultSectionSize(w)
-        self.fretboardView.setMinimumWidth(self.fretboardView.sizeHint().width())
-
     def eventFilter(self, object: QObject, event: QEvent) -> bool:
         """
         Show or hide buttons over widgets
         """
-        if object == self.fretboardView and event.type() == QEvent.Enter:
-            point = self.fretboardView.rect().bottomRight() \
-                    - QPoint(self.saveFretboardButton.width(), self.saveFretboardButton.height()) \
-                    - QPoint(20, 20)
-            self.saveFretboardButton.move(self.fretboardView.mapToParent(point))
-            self.saveFretboardButton.show()
-            return True
-        elif object == self.fretboardView and event.type() == QEvent.Leave:
-            self.saveFretboardButton.hide()
-            return True
-        elif object == self.chordPicWidget and event.type() == QEvent.Enter:
+        if object == self.chordPicWidget and event.type() == QEvent.Enter:
             point = self.chordPicWidget.rect().bottomRight() \
                     - QPoint(self.saveChordButton.width(), self.saveChordButton.height()) \
                     - QPoint(20, 20)
@@ -264,53 +231,5 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return super().eventFilter(object, event)
 
     @pyqtSlot()
-    def onSaveFretboardClicked(self):
-        filename = QFileDialog.getSaveFileName(self, "Save fretboard", filter="*.png;; *.bmp;; *.jpg")
-        if not filename:
-            return
-        self.saveFretboard(filename[0])
-
-    @pyqtSlot()
     def onSaveChordClicked(self):
         pass
-
-    def saveFretboard(self, fileName):
-        """
-        Save the content of the fretboard view. Use a temporary widget so that it can be arbitrarily resized to
-        encompass the entire fretboard. Otherwise would not be able to render the parts that are clipped from
-        the scroll area
-        """
-        model = self.model
-        tmpView = QTableView()
-        tmpView.verticalHeader().setDefaultSectionSize(self.fretboardView.verticalHeader().defaultSectionSize())
-        tmpView.horizontalHeader().setDefaultSectionSize(self.fretboardView.horizontalHeader().defaultSectionSize())
-        tmpView.setModel(model)
-        tmpView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        tmpView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        tmpView.setItemDelegate(self.fretboardView.itemDelegate())
-        tmpView.setShowGrid(self.fretboardView.showGrid())
-
-        topLeftIndex = model.index(0, 0)
-        bottomRightIndex = model.index(model.rowCount() - 1, model.columnCount() - 1)
-        bottomRightRect = tmpView.visualRect(bottomRightIndex).marginsAdded(
-            QMargins(0,
-                     0,
-                     tmpView.verticalHeader().width(),
-                     tmpView.horizontalHeader().height()))
-        bottomRight = bottomRightRect.bottomRight()
-        rect = QRect(tmpView.rect().topLeft(),
-                     bottomRight)
-        srcReg = QRegion(rect)
-        tmpView.scrollTo(topLeftIndex)
-        tmpView.setFixedSize(rect.size())
-        tmpView.show()
-        # Keep the QImage and QPainter to prevent garbage collector from destroying them and getting memory errors on
-        # Qt side
-        self.img = QImage(rect.size(), QImage.Format_RGB32)
-        self.p = QPainter(self.img)
-        tmpView.render(self.p, sourceRegion=srcReg)
-
-        if self.img.save(fileName):
-            print("Saved ", fileName)
-
-        tmpView.deleteLater()
