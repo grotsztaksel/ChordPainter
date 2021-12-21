@@ -84,7 +84,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def setModel(self, model):
         if self.model is not None:
-            self.chordSelector.disconnect()
             self.model.deleteLater()
         self.model = model
         self.fretboardView.setModel(model)
