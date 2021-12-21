@@ -8,8 +8,10 @@
           "name": "Drop D",
           "strings": "EBGDAD"
         },
-        {"name": "Open D",
-          "strings": "DADF#AD"}
+        {
+          "name": "Open D",
+          "strings": "DADF#AD"
+        }
       ],
       "nfrets": 20,
       "dotsOnFrets": [
@@ -27,8 +29,12 @@
       "strings": "DBGDG",
       "tuning": [
         {
-          "name": "Double C",
-          "strings": "DCGCG"
+          "strings": "DCGCG",
+          "name": "Double C"
+        },
+        {
+          "strings": "DA#GDG",
+          "name": "Open G Minor"
         }
       ],
       "nfrets": 22,
