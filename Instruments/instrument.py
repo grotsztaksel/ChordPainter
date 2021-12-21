@@ -10,6 +10,8 @@ __date__ = '2021-10-14'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
 import warnings
+from copy import copy
+
 from chord import Chord
 from music_theory import NOTES, notesFromString
 
@@ -102,7 +104,7 @@ class Instrument(object):
         else:
             instrument.rootfrets = [0] * len(instrument.strings)
 
-        instrument.tuning = [("Standard", instrument.strings)]
+        instrument.tuning = [("Standard", copy(instrument.strings))]
 
         invalid = []
         if "tuning" in d:
@@ -115,7 +117,7 @@ class Instrument(object):
                 if "name" in t:
                     name = t["name"]
                 else:
-                    name = ", ".join(s)
+                    name = None
                 instrument.tuning.append((name, s))
             for inv in reversed(invalid):
                 d["tuning"].pop(inv)
