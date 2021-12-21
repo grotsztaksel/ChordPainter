@@ -91,6 +91,7 @@ class FretboardModel(QAbstractItemModel):
             return False
         string = self.stringFromIndex(index)
         self.instrument.strings[string] = value
+        self.dataChanged.emit(index, index)  # Docu says it must explicitly be emitted
         return True
 
     def stringFromIndex(self, index):
