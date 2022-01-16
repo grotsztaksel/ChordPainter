@@ -19,7 +19,10 @@ NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 # first
 NOTEre = re.compile("({})".format("|".join(reversed(NOTES))), re.IGNORECASE)
 
-ChordType = namedtuple("ChordType", ["interval", "name"])
+ChordType = namedtuple("ChordType", ["interval", "name", "annotations"])
+ChordType.interval.__doc__ = "A tuple of halftone intervals between subsequent notes of a chord"
+ChordType.name.__doc__ = "Name of the chord type"
+ChordType.annotations.__doc__ = "Possible annotations of the chord that can be used in HTML documents"
 
 
 class ChordInterval(object):
@@ -27,18 +30,18 @@ class ChordInterval(object):
     Lists of intervals that define different kinds of chords
     """
     # Triads:
-    major = ChordType((4, 3), "major")
-    minor = ChordType((3, 4), "minor")
-    diminished = ChordType((3, 3), "diminished")
-    augmented = ChordType((4, 4), "augmented")
+    major = ChordType((4, 3), "major", [''])
+    minor = ChordType((3, 4), "minor", ['m'])
+    diminished = ChordType((3, 3), "diminished", ['&#176;'])
+    augmented = ChordType((4, 4), "augmented", ['+'])
 
     # Seventh
-    major_7 = ChordType((4, 3, 4), "major 7th")
-    dominant_7 = ChordType((4, 3, 3), "dominant 7th")
-    minor_major_7 = ChordType((3, 4, 4), "minor major 7th")
-    min_7 = ChordType((3, 4, 3), "minor 7th")
-    halfdim_7 = ChordType((3, 3, 4), "half diminished 7th")
-    dim7 = ChordType((3, 3, 3), "diminished 7th")
+    major_7 = ChordType((4, 3, 4), "major 7th", ['M7', '&Delta;7'])
+    dominant_7 = ChordType((4, 3, 3), "dominant 7th", ["7"])
+    minor_major_7 = ChordType((3, 4, 4), "minor major 7th",['minMaj7'])
+    min_7 = ChordType((3, 4, 3), "minor 7th", ['m7'])
+    halfdim_7 = ChordType((3, 3, 4), "half diminished 7th", ['&emptyv;7'])
+    dim7 = ChordType((3, 3, 3), "diminished 7th", ['&#x25CB;7'])
 
     @staticmethod
     def getInterval(intvl_name):

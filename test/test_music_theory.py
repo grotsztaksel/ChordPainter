@@ -27,16 +27,16 @@ class TestChordInterval(unittest.TestCase):
         self.assertIsNone(ChordInterval.getInterval("blah"))
 
     def test_getAllChordTypes(self):
-        expected = [ChordType(interval=(4, 4), name='augmented'),
-                    ChordType(interval=(3, 3, 3), name='diminished 7th'),
-                    ChordType(interval=(3, 3), name='diminished'),
-                    ChordType(interval=(4, 3, 3), name='dominant 7th'),
-                    ChordType(interval=(3, 3, 4), name='half diminished 7th'),
-                    ChordType(interval=(4, 3), name='major'),
-                    ChordType(interval=(4, 3, 4), name='major 7th'),
-                    ChordType(interval=(3, 4, 3), name='minor 7th'),
-                    ChordType(interval=(3, 4), name='minor'),
-                    ChordType(interval=(3, 4, 4), name='minor major 7th')]
+        expected = [ChordType(interval=(4, 4), name='augmented', annotations=['+']),
+                    ChordType(interval=(3, 3, 3), name='diminished 7th', annotations=['&#x25CB;7']),
+                    ChordType(interval=(3, 3), name='diminished', annotations=['&#176;']),
+                    ChordType(interval=(4, 3, 3), name='dominant 7th', annotations=["7"]),
+                    ChordType(interval=(3, 3, 4), name='half diminished 7th', annotations=['&emptyv;7']),
+                    ChordType(interval=(4, 3), name='major', annotations=['']),
+                    ChordType(interval=(4, 3, 4), name='major 7th', annotations=['M7', '&Delta;7']),
+                    ChordType(interval=(3, 4, 3), name='minor 7th', annotations=['m7']),
+                    ChordType(interval=(3, 4), name='minor', annotations=['m']),
+                    ChordType(interval=(3, 4, 4), name='minor major 7th', annotations=['minMaj7'])]
         self.assertEqual(expected, ChordInterval.getAllChordTypes())
 
 
@@ -55,7 +55,7 @@ class TestMusicTheory(unittest.TestCase):
         self.assertEqual(['E', 'G', 'A#'], getChordNotes("E", ChordInterval.diminished))
         self.assertEqual(['A', 'C', 'E'], getChordNotes("A", ChordInterval.minor))
 
-        self.assertEqual(NOTES, getChordNotes("C", ChordType(tuple(11 * [1]), "just all notes!")))
+        self.assertEqual(NOTES, getChordNotes("C", ChordType(tuple(11 * [1]), "just all notes!", ['test'])))
 
 
 if __name__ == '__main__':
