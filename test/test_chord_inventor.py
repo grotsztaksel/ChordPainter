@@ -15,7 +15,7 @@ from chord_inventor import ChordInventor
 from music_theory import NOTES, ChordInterval
 from chord import Chord
 
-
+@unittest.skip('An abandoned class.')
 class TestChordInventor(unittest.TestCase):
     def test_buildChords_guitar_major(self):
         g = Guitar()

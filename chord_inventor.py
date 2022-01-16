@@ -12,7 +12,7 @@ __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 from Instruments.instrument import Instrument
 from music_theory import NOTES, ChordInterval
 
-
+# An abandoned class
 class ChordInventor(object):
     """
     Figures out chord configurations given the instrument's tuning. Implements very little ergonomyy rules, so the
