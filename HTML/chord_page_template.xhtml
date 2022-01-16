@@ -2,32 +2,71 @@
 <!DOCTYPE html
         PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pl" lang="pl">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <title></title>
+    <title>${chordroot}</title>
+    <style type="text/css">
+        h1 {
+            font-size:60px;
+            text-align: center;
+        }
+        p + p {
+          margin-top: 24px;
+        }
+        img {
+            width: auto;
+            height: 100%;
+        }
+        .root_col {
+          float: left;
+          width:  10%
+        }
+        .chord_col {
+          float: left;
+          width:  70%;
+        }
+        .type_col {
+          float: right;
+          width:  20%
+        }
+        .row:after {
+          content: "";
+          display: table;
+          clear: both;
+        }
+        .highlight {
+            font-size: 150%;
+            font-weight: bold;
+        }
+
+    </style>
 </head>
 <body>
-<h2>Triady {chord_root}</h2>
-<h4>Dźwięki w akordzie: {notes_in_chord}</h4>
-<table>
-    <tr>
-        <th>{chord_maj}</th>
-        <th>{chord_min}</th>
-        <th>{chord_dim}</th>
-        <th>{chord_aug}</th>
-    </tr>
-    <tr>
-        <td>{notes_maj}</td>
-        <td>{notes_min}</td>
-        <td>{notes_dim}</td>
-        <td>{notes_aug}</td>
-    </tr>
-    <tr>
-        <td><img src="../img/{instrument}_{chord_maj_filename}.png" alt=""/></td>
-        <td><img src="../img/{instrument}_{chord_min_filename}.png" alt=""/></td>
-        <td><img src="../img/{instrument}_{chord_dim_filename}.png" alt=""/></td>
-        <td><img src="../img/{instrument}_{chord_aug_filename}.png" alt=""/></td>
-    </tr>
-</table>
+<div class="row">
+    <div class="root_col">
+        <p><a href="./${instrument}_C_major.xhtml">C</a></p>
+        <p><a href="./${instrument}_C#_major.xhtml">C#</a></p>
+        <p><a href="./${instrument}_D_major.xhtml">D</a></p>
+        <p><a href="./${instrument}_D#_major.xhtml">D#</a></p>
+        <p><a href="./${instrument}_E_major.xhtml">E</a></p>
+        <p><a href="./${instrument}_F_major.xhtml">F</a></p>
+        <p><a href="./${instrument}_F#_major.xhtml">F#</a></p>
+        <p><a href="./${instrument}_G_major.xhtml">G</a></p>
+        <p><a href="./${instrument}_G#_major.xhtml">G#</a></p>
+        <p><a href="./${instrument}_A_major.xhtml">A</a></p>
+        <p><a href="./${instrument}_A#_major.xhtml">A#</a></p>
+    </div>
+    <div class="chord_col">
+        ${images}
+    </div>
+    <div class="type_col">
+        <p><a href="./${instrument}_${chordroot}_major.xhtml">${chordroot}</a></p>
+        <p><a href="./${instrument}_${chordroot}_minor.xhtml">${chordroot}m</a></p>
+        <p><a href="./${instrument}_${chordroot}_dominant_7th.xhtml">${chordroot}7</a></p>
+        <p><a href="./${instrument}_${chordroot}_minor_7th.xhtml">${chordroot}m<sup>7</sup></a></p>
+        <p><a href="./${instrument}_${chordroot}_diminished.xhtml">${chordroot}m&#176;</a></p>
+    </div>
+</div>
+
 </body>
 </html>
