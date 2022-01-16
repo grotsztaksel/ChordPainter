@@ -16,17 +16,17 @@ from tools.generate_htmls import writeHtml
 class TestGenerateHtmls(unittest.TestCase):
     def test_writeHtml(self):
         instrument = "banjo"
-        root = "C"
+        root = "D#"
         chordType = ChordInterval.minor
-        htmName = os.path.join(os.path.dirname(__file__), "banjo_C_minor.xhtml")
-        refName = os.path.join(os.path.dirname(__file__), "test_ref_banjo_C_minor.xhtml")
+        htmName = os.path.join(os.path.dirname(__file__), "banjo_D_sharp_minor.xhtml")
+        refName = os.path.join(os.path.dirname(__file__), "test_ref_banjo_D_sharp_minor.xhtml")
 
 
         if os.path.isfile(htmName):
             os.remove(htmName)
         images = [
-            "banjo_openG___C_minor.png",
-            "banjo_doubleC_C_minor.png"
+            "banjo_openG___D_sharp_minor.png",
+            "banjo_doubleC_D_sharp_minor.png"
         ]
         writeHtml(instrument, root, chordType, htmName, images)
 
