@@ -32,7 +32,7 @@ class ChordInterval(object):
     # Triads:
     major = ChordType((4, 3), "major", [''])
     minor = ChordType((3, 4), "minor", ['m'])
-    diminished = ChordType((3, 3), "diminished", ['&#176;'])
+    diminished = ChordType((3, 3), "diminished", ['m&#176;'])
     augmented = ChordType((4, 4), "augmented", ['+'])
 
     # Seventh
