@@ -103,9 +103,9 @@ def writeHtml(instrument, root, chordType: ChordType, htmFullPath, images):
 
 def paintFretboard(instrument, root, chordType, imgName):
     if isinstance(instrument, Ukulele):
-        size = QSize(160, 640)
-    else:
         size = QSize(160, 920)
+    else:
+        size = QSize(200, 920)
     painter = FretboardPainter(size, instrument)
     painter.setChordNotes(getChordNotes(root, chordType))
     painter.draw()
