@@ -1,0 +1,38 @@
+@charset "utf-8";
+/* Styles for chord diagrams */
+
+h1 {
+    font-size:60px;
+    text-align: center;
+    }
+p + p {
+    margin-top: 24px;
+    }
+img {
+    align: top;
+    width: auto;
+    height: 100%;
+    }
+.root_col {
+    margin-top: 80px;
+    float: left;
+    width:  10%
+    }
+.chord_col {
+    float: left;
+    width:  70%;
+    }
+.type_col {
+    margin-top: 80px;
+    float: right;
+    width:  20%
+    }
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+    }
+.highlight {
+    font-size: 150%;
+    font-weight: bold;
+    }

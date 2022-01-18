@@ -5,42 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <title>${chordroot}</title>
-    <style type="text/css">
-        h1 {
-            font-size:60px;
-            text-align: center;
-        }
-        p + p {
-          margin-top: 24px;
-        }
-        img {
-            align: top;
-            width: auto;
-            height: 100%;
-        }
-        .root_col {
-          float: left;
-          width:  10%
-        }
-        .chord_col {
-          float: left;
-          width:  70%;
-        }
-        .type_col {
-          float: right;
-          width:  20%
-        }
-        .row:after {
-          content: "";
-          display: table;
-          clear: both;
-        }
-        .highlight {
-            font-size: 150%;
-            font-weight: bold;
-        }
-
-    </style>
+    <link rel="stylesheet" type="text/css" href="./chord_diagrams.css"/>
 </head>
 <body>
 <div class="row">
@@ -56,6 +21,7 @@
         <p><a href="./${instrument}_G#_major.xhtml">G#</a></p>
         <p><a href="./${instrument}_A_major.xhtml">A</a></p>
         <p><a href="./${instrument}_A#_major.xhtml">A#</a></p>
+        <p><a href="./${instrument}_B_major.xhtml">B</a></p>
     </div>
     <div class="chord_col">
         ${images}
