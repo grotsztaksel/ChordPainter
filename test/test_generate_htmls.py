@@ -10,7 +10,7 @@ import unittest
 import os
 
 from music_theory import ChordInterval
-from tools.generate_htmls import writeHtml
+from generate_htmls import writeHtml
 
 
 class TestGenerateHtmls(unittest.TestCase):

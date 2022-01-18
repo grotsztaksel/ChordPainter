@@ -8,8 +8,19 @@ Created on 06.12.2021 21:29 12
 __date__ = '2021-12-06'
 __authors__ = ["Piotr Gradkowski <grotsztaksel@o2.pl>"]
 
-import logging
 import os
+
+try:
+    # Enable importing modules from PATH environmental variable (Python 3.8+ on Windows)
+    _dllDirs = [os.add_dll_directory(d) for d in
+                os.environ["PATH"].split(";") +
+                [os.path.abspath(os.path.join(os.path.dirname(__file__), ""))] +
+                [os.getcwd()] if
+                os.path.isdir(d)]
+except AttributeError:
+    pass
+
+import logging
 import sys
 from copy import copy
 
@@ -22,9 +33,9 @@ from Instruments.ukulele import Ukulele
 from fretboard_painter import FretboardPainter
 from music_theory import NOTES, ChordInterval, ChordType, getChordNotes
 
-htmdir = os.path.join(os.path.dirname(__file__), "..", "HTML")
+htmdir = os.path.join(os.path.dirname(__file__), "", "HTML")
 template_file = os.path.join(htmdir, "chord_page_template.xhtml")
-imgdir = os.path.join(os.path.dirname(__file__), "..", "img")
+imgdir = os.path.join(os.path.dirname(__file__), "", "img")
 
 with open(template_file, 'r') as tf:
     TEMPLATE = tf.read()
@@ -79,7 +90,7 @@ def writeHtml(instrument, root, chordType: ChordType, htmFullPath, images):
     htm = htm.replace("#_", "_sharp_")
     htm = htm.replace("${chordtype}", chordType.name)
     htmName = os.path.basename(htmFullPath.replace("#", "_sharp"))
-    majorname = htmName.replace(chordType.name, "major")
+    majorname = htmName.replace(chordType.name.replace(" ", "_"), "major")
     # Highlight the chord root and remove the hyperlink. Do that only once
     htm = htm.replace(f'<p><a href="./{majorname}">{root}</a></p>',
                       f'<p class="highlight">{root}</p>', 1)
