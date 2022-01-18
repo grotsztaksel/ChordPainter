@@ -49,8 +49,8 @@ use_types = [ChordInterval.major,
 
 def main():
     logfile = "generate_htmls.log"
-    logging.basicConfig(level=logging.DEBUG,
-                        format="%(asctime)s [%(levelname)s] %(message)s",
+    logging.basicConfig(level=logging.INFO,
+                        format="WRITE HTML: %(asctime)s [%(levelname)s] %(message)s",
                         handlers=[
                             logging.FileHandler(logfile, 'w', 'utf-8'),
                             logging.StreamHandler(sys.stdout)
