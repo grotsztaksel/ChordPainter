@@ -12,7 +12,7 @@ import os
 
 try:
     # Enable importing modules from PATH environmental variable (Python 3.8+ on Windows)
-    _dllDirs = [os.add_dll_directory(d) for d in
+    _dllDirs = [os.add_dll_directory(os.path.abspath(d)) for d in
                 os.environ["PATH"].split(";") +
                 [os.path.abspath(os.path.join(os.path.dirname(__file__), ""))] +
                 [os.getcwd()] if
