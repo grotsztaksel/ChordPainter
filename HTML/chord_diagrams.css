@@ -13,19 +13,27 @@ img {
     width: auto;
     height: 100%;
     }
-.root_col {
-    margin-top: 80px;
+
+.l, .r {
+    margin-top: 120px;
+    width:  15%;
+}
+.l {
     float: left;
-    width:  10%
-    }
+}
+.r {
+    float: right;
+}
+div.l > div {
+    float: right;
+}
+div.r > div {
+    float: left;
+}
+
 .chord_col {
     float: left;
     width:  70%;
-    }
-.type_col {
-    margin-top: 80px;
-    float: right;
-    width:  20%
     }
 .row:after {
     content: "";
