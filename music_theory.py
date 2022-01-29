@@ -35,6 +35,9 @@ class ChordInterval(object):
     diminished = ChordType((3, 3), "diminished", ['m&#176;'])
     augmented = ChordType((4, 4), "augmented", ['+'])
 
+    #
+    power = ChordType((7, 12), "power", ['5'])
+
     # Seventh
     major_7 = ChordType((4, 3, 4), "major 7th", ['M7', '&Delta;7'])
     dominant_7 = ChordType((4, 3, 3), "dominant 7th", ["7"])
