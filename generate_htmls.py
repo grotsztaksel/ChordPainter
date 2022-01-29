@@ -87,6 +87,7 @@ def writeHtml(instrument, root, chordType: ChordType, htmFullPath, images):
     htm = copy(TEMPLATE)
     htm = htm.replace("${instrument}", instrument)
     htm = htm.replace("${chordroot}", root)
+    htm = htm.replace("${chordnotes}", ', '.join(getChordNotes(root, chordType)))
     htm = htm.replace("#_", "_sharp_")
     htm = htm.replace("${chordtype}", chordType.name)
     htmName = os.path.basename(htmFullPath.replace("#", "_sharp"))
